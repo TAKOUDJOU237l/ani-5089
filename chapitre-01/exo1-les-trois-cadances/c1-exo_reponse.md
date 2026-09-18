@@ -4,9 +4,9 @@
 
 ## 72 Hz
 
-# la duree  d'une image  = 1000 / frequences en Hz
+## la duree  d'une image  = 1000 / frequences en Hz
 
-# la duree d une image :
+##  la duree d une image :
 
 1000 / 72 = 13.9 ms
 # il faut retirer les 8 ms reservees aux capteurs , a la transmision ,a la composition et a l affichage 
