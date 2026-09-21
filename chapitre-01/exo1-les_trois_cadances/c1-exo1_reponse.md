@@ -33,3 +33,7 @@ la duree d une image :
 
 Temps restant pour le code 
 8.3 - 8 = 0.3 ms
+
+conclusion 
+
+plus la frequence d affichage augmente , plus la duree disponible pour chaque image diminue. Apres aavoir retiré 8ms utilisee par les capteurs; la transmissions , la composition, et l'affichage ,il reste 5.9ms a 7.5hz , 3.1 ms a 90 hz et seulement 0.3ms a 120 hz pour le code. cela montre qu'en realité virtuelle, le programe doit etre tre rapide et respecter l'écheance de chaque image
