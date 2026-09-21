@@ -4,6 +4,7 @@
 les six valeurs mesurées sont
 
 | personne |   Ecats pupillaires|
+|---|---|
 | moi      |  5.7 |
 | petite soeur | 5.5  |
 |grande soeur | 6.0 |
