@@ -1,0 +1,1 @@
+![Les trois espaces dessinés](file:///C:/Users/LENOVO/Desktop/bobo/chapitre-01/exo10-les_trois_espaces_dessines/dessin.jpg)
