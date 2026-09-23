@@ -85,3 +85,15 @@ int main()
 
     return 0;
 }
+
+## Exemple d excution 
+
+Entré du programme
+Une position  0.0 0.0 0.0
+Un quaternion 0.0 0.70710678 0.0 0.70710678
+Un point  0.0 0.0 -2.0
+
+sortie 
+
+-2.0000 0.0000 -0.0000
+

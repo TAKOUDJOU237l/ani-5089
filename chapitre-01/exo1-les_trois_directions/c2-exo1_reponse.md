@@ -48,6 +48,6 @@ int main()
 
 ### Exemple d excecution 
 
-point choisi (0.0, 0.0, -2.0)
+point choisi 0.0 0.0 -2.0
 
-sortie attendu (2.0000 , 0.0000 , 0.0000 )
+sortie attendu 2.0000  0.0000  0.0000 
