@@ -27,8 +27,8 @@ int main() {
         needs[name] = deps;
     }
 
-    std::getline(std::cin, line); 
-    std::getline(std::cin, line); 
+    std::getline(std::cin, line);
+    std::getline(std::cin, line);
 
     std::istringstream iss(line);
     std::string name;
@@ -55,7 +55,6 @@ int main() {
         }
     }
 
-
     std::map<std::string, int> neededBy;
     for (const std::string &module_name : closure) {
         neededBy[module_name] = 0;
@@ -76,12 +75,13 @@ int main() {
         }
     }
 
-    std::vector<std::string> order;
+    std::size_t printed = 0;
     while (!ready.empty()) {
         auto it = ready.begin();
         std::string current = *it;
         ready.erase(it);
-        order.push_back(current);
+        std::cout << current << "\n";
+        ++printed;
 
         auto itNeeds = needs.find(current);
         if (itNeeds != needs.end()) {
@@ -94,12 +94,8 @@ int main() {
         }
     }
 
-    if (order.size() != closure.size()) {
+    if (printed != closure.size()) {
         std::cout << "CYCLE\n";
-    } else {
-        for (const std::string &module_name : order) {
-            std::cout << module_name << "\n";
-        }
     }
 
     return 0;
