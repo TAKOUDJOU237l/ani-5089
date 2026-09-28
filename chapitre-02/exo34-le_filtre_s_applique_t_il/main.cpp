@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 
 std::string trim(const std::string &s) {
     size_t start = s.find_first_not_of(" \t");
@@ -34,13 +35,13 @@ int main() {
     std::getline(std::cin, line);
     int v = std::stoi(line);
 
-    std::map<std::string, std::string> machine;
+    std::map<std::string, std::set<std::string>> machine;
     for (int i = 0; i < v; ++i) {
         std::getline(std::cin, line);
         size_t eq = line.find('=');
         std::string key = trim(line.substr(0, eq));
         std::string value = trim(line.substr(eq + 1));
-        machine[key] = value;
+        machine[key].insert(value);
     }
 
     std::getline(std::cin, line);
@@ -60,15 +61,15 @@ int main() {
             }
 
             size_t eq = term.find('=');
-            std::string key = term.substr(0, eq);
-            std::string value = term.substr(eq + 1);
+            std::string key = trim(term.substr(0, eq));
+            std::string value = trim(term.substr(eq + 1));
 
             bool termValue;
             auto it = machine.find(key);
             if (it == machine.end()) {
                 termValue = false;
             } else {
-                termValue = (it->second == value);
+                termValue = (it->second.count(value) > 0);
             }
 
             if (negate) {
