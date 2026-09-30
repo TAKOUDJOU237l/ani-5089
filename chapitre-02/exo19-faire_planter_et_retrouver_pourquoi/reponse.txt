@@ -1,0 +1,13 @@
+Ce que la trace apprend.
+
+La trace confirme d'abord le type exact du plantage. La ligne "Fatal signal 11 (SIGSEGV), code 1 (SEGV_MAPERR)" et la ligne "Cause: null pointer dereference" disent sans ambiguïté qu'il s'agit d'un déréférencement de pointeur nul, à l'adresse fautive 0x0000000000000000. C'est cohérent avec le code volontaire de plantage.cpp, qui écrit à travers un pointeur nul.
+
+Elle identifie aussi précisément le processus fautif. La ligne "Cmdline: /data/local/tmp/plantage" et la ligne "name: plantage >>> /data/local/tmp/plantage <<<" nomment le binaire exact, avec son pid et son tid. Sur un appareil où plusieurs applications tournent en même temps, cette identification évite de chercher au mauvais endroit.
+
+Elle donne enfin le contexte de l'appareil : l'empreinte de build Samsung, l'architecture arm64, l'horodatage du crash, et le fait que le processus n'a vécu qu'une seconde avant de planter (Process uptime: 1s), ce qui indique un plantage au tout début de l'exécution plutôt qu'après un long calcul.
+
+Ce que la trace n'apprend pas.
+
+La trace ne dit pas dans quelle fonction, ni à quelle ligne du code source le plantage a eu lieu. Les notes "NOTE: Function names and BuildId information is missing for some frames" et "NOTE: Unreadable libraries: /data/local/tmp/plantage" le disent explicitement : le binaire poussé sur l'appareil n'a pas été compilé avec les symboles de débogage, ou ceux-ci n'ont pas été lus. La pile d'appels ne contient qu'une seule frame utile, "#00 pc 0000000000001798 /data/local/tmp/plantage", une simple adresse mémoire, pas un nom de fonction comme "main" ni un numéro de ligne.
+
+Sans ces symboles, il est impossible de savoir directement quelle instruction du fichier source correspond à l'adresse 0x1798. Il faudrait soit recompiler avec les informations de débogage, soit passer cette adresse dans un outil comme addr2line avec le binaire non dépouillé pour retrouver la ligne exacte. La trace prouve donc qu'il y a eu un déréférencement de pointeur nul, mais elle ne prouve pas, à elle seule, où dans le code ce pointeur a été lu.
