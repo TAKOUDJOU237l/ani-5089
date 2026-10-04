@@ -3,12 +3,18 @@
 #include <string>
 
 int main() {
+    long long n = 0;
+    if (!(std::cin >> n)) {
+        return 0;
+    }
+
     std::string ligne;
     std::getline(std::cin, ligne);
-    int n = std::stoi(ligne);
 
-    for (int i = 0; i < n; ++i) {
-        std::getline(std::cin, ligne);
+    for (long long i = 0; i < n; ++i) {
+        if (!std::getline(std::cin, ligne)) {
+            break;
+        }
         std::istringstream flux(ligne);
 
         bool avance = false;
@@ -31,7 +37,7 @@ int main() {
 
         int deplacement = (avance ? 1 : 0) - (recule ? 1 : 0);
         int cote = (droite ? 1 : 0) - (gauche ? 1 : 0);
-        std::cout << deplacement << " " << cote << "\n";
+        std::cout << deplacement << " " << cote << std::endl;
     }
 
     return 0;
