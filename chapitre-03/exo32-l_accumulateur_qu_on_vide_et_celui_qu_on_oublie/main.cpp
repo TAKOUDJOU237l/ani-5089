@@ -2,22 +2,28 @@
 #include <string>
 
 int main() {
-    int n = 0;
-    std::cin >> n;
+    long long n = 0;
+    if (!(std::cin >> n)) {
+        return 0;
+    }
 
     long long totalX = 0;
     long long totalY = 0;
     long long moteurX = 0;
     long long moteurY = 0;
 
-    for (int i = 0; i < n; ++i) {
+    for (long long i = 0; i < n; ++i) {
         std::string commande;
-        std::cin >> commande;
+        if (!(std::cin >> commande)) {
+            break;
+        }
 
         if (commande == "bouge") {
             long long dx = 0;
             long long dy = 0;
-            std::cin >> dx >> dy;
+            if (!(std::cin >> dx >> dy)) {
+                break;
+            }
             totalX += dx;
             totalY += dy;
             moteurX = dx;
