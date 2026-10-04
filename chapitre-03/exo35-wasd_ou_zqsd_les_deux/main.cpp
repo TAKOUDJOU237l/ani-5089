@@ -29,7 +29,7 @@ int main() {
             } else if (touche == "S") {
                 recule = true;
             } else if (touche == "A" || touche == "Q") {
-                gauche = true;
+                gauche = true;                git add chapitre-03/exo35-wasd_ou_zqsd_les_deux/main.cpp
             } else if (touche == "D") {
                 droite = true;
             }
