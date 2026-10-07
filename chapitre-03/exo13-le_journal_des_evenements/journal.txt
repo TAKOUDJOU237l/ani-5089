@@ -1,0 +1,12 @@
+callback_global 0.22
+deplacement 2.608
+brut  3.408
+touche_enfoncee 1.908
+bouton_enfonce 2.244
+molette_verticale 4.659
+entree_pointeur 1.45
+sortie_pointeur 3.787
+focus_gagne 4.341
+focus_perdu 5.223
+redimensionnement 4.234
+dessin 2.345

@@ -1,0 +1,5 @@
+Le type qui m’a le plus surpris est Redim. Je pensais que redimensionner la fenêtre plusieurs fois produirait de nombreux événements, peut-être un événement à chaque petit changement de largeur ou de hauteur.
+
+Pourtant, le classement ne compte qu’un seul Redim, alors qu’il compte 24 événements Souris, 12 Touche et 5 Focus. Le journal note ce redimensionnement à 4.234 secondes.
+
+Cela suggère que le moteur regroupe le geste et envoie un seul événement lorsque le redimensionnement est terminé, plutôt qu’un événement pour chaque mouvement. Cette expérience me montre qu’il faut mesurer les événements réellement reçus au lieu de supposer leur fréquence.
