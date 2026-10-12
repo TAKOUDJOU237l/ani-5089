@@ -1,0 +1,5 @@
+﻿Plateau :
+Le dessus du plateau est a 0,75 m du sol et le plateau est epais de 0,05 m. Le centre est a mi-epaisseur sous le dessus, donc y_centre = 0,75 - 0,05 / 2 = 0,75 - 0,025 = 0,725 m. (Le dessous du plateau est a 0,725 - 0,025 = 0,70 m.) Le plateau est un cube mis a l'echelle (1,20 ; 0,05 ; 0,80), centre en (x = 0,60 ; y = 0,725 ; z = 0,70).
+
+Pieds :
+Un pied va du sol (y = 0) jusqu'au dessous du plateau (y = 0,70), pas jusqu'a son dessus. Hauteur = 0,70 - 0 = 0,70 m. Son centre est a mi-hauteur : y_centre = 0,70 / 2 = 0,35 m. Section 0,06 x 0,06. Pour que chaque pied soit sous le plateau, a un coin, centre a 0,57 m du centre en x (0,60 - 0,06 / 2) et a 0,37 m en z (0,40 - 0,06 / 2), soit x = 0,03 ou 1,17 et z = 0,33 ou 1,07.
