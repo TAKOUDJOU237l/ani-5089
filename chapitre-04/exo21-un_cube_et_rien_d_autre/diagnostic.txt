@@ -1,0 +1,12 @@
+Lignes :
+	NkMeshHandle meshCube = renderer->GetMeshSystem()->GetCube(); // unitaire, de -0,5 à +0,5
+		NkDrawCall3D d;
+		d.mesh = meshCube;
+		d.transform = NkMat4f::Translate(centre) * NkMat4f::Scale(taille); // translation * échelle
+		d.tint = {1.f, 1.f, 1.f};
+		d.aabb.min = {centre.x - taille.x * 0.5f, centre.y - taille.y * 0.5f, centre.z - taille.z * 0.5f};
+		d.aabb.max = {centre.x + taille.x * 0.5f, centre.y + taille.y * 0.5f, centre.z + taille.z * 0.5f};
+		r3d->Submit(d);
+
+Cause :
+Cause provoquee : la boite englobante (aabb) non renseignee. J'ai mis PROVOQUER_CAUSE a 1, ce qui supprime les deux lignes d.aabb.min et d.aabb.max. Le renderer decide de ce qui est dans le champ d'apres la boite englobante, pas d'apres le maillage : sans boite, l'objet est ecarte en silence. Resultat : l'ecran reste vide, sans aucun message d'erreur, alors que Submit a bien ete appele. Je l'ai trouvee en parcourant la liste dans l'ordre : la lumiere est declaree et transmise, la camera regarde le cube a 2 m, l'echelle vaut 0,5 et NK_SS_RENDER3D est actif ; il ne restait que l'aabb. En la remettant en coordonnees du monde (centre +/- 0,25), le cube est revenu.
