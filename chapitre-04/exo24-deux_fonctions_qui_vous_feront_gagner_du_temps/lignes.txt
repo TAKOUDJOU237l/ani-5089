@@ -1,0 +1,6 @@
+Avant : 39
+
+Après : 44
+
+Comptage : Règle identique pour les deux comptes : j'ai compté les lignes de code qui construisent la salle, c'est-à-dire la fonction d'aide qui envoie un cube au renderer plus la fonction ConstruireSalle (sol, plafond, quatre murs, porte, deux fenêtres, plateau, quatre pieds, un livre et une tasse). Pour Après, j'ai ajouté les deux fonctions PoserAuSol et PoserSurTable, qui sont du code écrit en plus. Une ligne compte si elle n'est ni vide ni un simple commentaire ; les accolades comptent. Laissé de côté : les #include, les constantes de dimensions, la caméra, la lumière, la boucle de rendu dans nkmain, et la fonction Verifier qui ne sert qu'à contrôler les deux fonctions.
+Le nombre de lignes ne diminue pas (39 puis 44, soit 5 de plus) : chaque objet reste une ligne, et les deux fonctions ajoutent six lignes, donc la salle elle-même en perd une dans la réécriture. Le gain est ailleurs : les huit calculs de "moitié de la hauteur" faits à la main (quatre murs, la porte, les pieds, le livre, la tasse) sont remplacés par deux, écrits une seule fois dans les fonctions. Dans Après, le sol, le plafond, les deux fenêtres et le plateau ne passent pas par PoserAuSol, parce qu'ils ne reposent pas sur le sol.
