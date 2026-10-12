@@ -29,7 +29,6 @@ NK_REGISTER_ENTRY_APPDATA_UPDATER(ConfigureAppData)
 int nkmain(const NkEntryState &state) {
 	(void)state;
 
-	// --- Fenêtre ---
 	NkWindowConfig winCfg;
 	winCfg.title = "Un cube, et rien d'autre";
 	winCfg.width = 1280;
@@ -102,7 +101,7 @@ int nkmain(const NkEntryState &state) {
 	const float32 DISTANCE = 2.0f;
 	const NkVec3f centre{pos.x + dx / longueur * DISTANCE, pos.y + dy / longueur * DISTANCE,
 						 pos.z + dz / longueur * DISTANCE};
-	const NkVec3f taille{0.5f, 0.5f, 0.5f}; // arête de 0,5 m
+	const NkVec3f taille{0.5f, 0.5f, 0.5f};
 
 	
 	while (running && window.IsOpen()) {

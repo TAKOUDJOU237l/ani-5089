@@ -174,10 +174,10 @@ int nkmain(const NkEntryState &state) {
 		Poser(r3d, cube, {0.f, HAUTEUR + EP_MUR * 0.5f, 0.f}, {large, EP_MUR, large}, couleurMur);
 
 		
-		Poser(r3d, cube, {0.f, HAUTEUR * 0.5f, murFondZ}, {large, HAUTEUR, EP_MUR}, couleurMur);   // fond (z < 0)
-		Poser(r3d, cube, {0.f, HAUTEUR * 0.5f, -murFondZ}, {large, HAUTEUR, EP_MUR}, couleurMur);  // entrée (z > 0)
-		Poser(r3d, cube, {murGaucheX, HAUTEUR * 0.5f, 0.f}, {EP_MUR, HAUTEUR, INTERIEUR}, couleurMur);  // gauche (x < 0)
-		Poser(r3d, cube, {-murGaucheX, HAUTEUR * 0.5f, 0.f}, {EP_MUR, HAUTEUR, INTERIEUR}, couleurMur); // droite (x > 0)
+		Poser(r3d, cube, {0.f, HAUTEUR * 0.5f, murFondZ}, {large, HAUTEUR, EP_MUR}, couleurMur);
+		Poser(r3d, cube, {0.f, HAUTEUR * 0.5f, -murFondZ}, {large, HAUTEUR, EP_MUR}, couleurMur);
+		Poser(r3d, cube, {murGaucheX, HAUTEUR * 0.5f, 0.f}, {EP_MUR, HAUTEUR, INTERIEUR}, couleurMur);
+		Poser(r3d, cube, {-murGaucheX, HAUTEUR * 0.5f, 0.f}, {EP_MUR, HAUTEUR, INTERIEUR}, couleurMur);
 
 		
 		Poser(r3d, cube, {PORTE_X, PORTE_H * 0.5f, porteZ}, {PORTE_L, PORTE_H, EP_PANNEAU}, couleurPorte);

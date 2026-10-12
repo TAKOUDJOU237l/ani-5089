@@ -84,7 +84,7 @@ int nkmain(const NkEntryState &state) {
 		return 3;
 	}
 	NkRender3D *r3d = renderer->GetRender3D();
-	NkMeshHandle cube = renderer->GetMeshSystem()->GetCube(); // unitaire, de -0,5 à +0,5
+	NkMeshHandle cube = renderer->GetMeshSystem()->GetCube();
 
 	bool running = true;
 	uint32 W = devInfo.width;

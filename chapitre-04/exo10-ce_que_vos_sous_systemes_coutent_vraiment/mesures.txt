@@ -1,0 +1,4 @@
+A REMPLIR avec VOS mesures (Release, moyenne sur 400 images, en microsecondes), une par ligne :
+NK_SS_RENDER3D : ... us
+NK_SS_RENDER3D + <sous-systeme 2> : ... us
+(au moins six lignes, ajoutez un sous-systeme a la fois)

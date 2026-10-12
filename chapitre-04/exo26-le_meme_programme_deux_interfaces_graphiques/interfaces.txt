@@ -1,0 +1,6 @@
+Première : Software 128.15 ms
+
+Seconde : OpenGL 92.86 ms
+
+Différences :
+Sur seconde.png (OpenGL), l'image est retournée de haut en bas : la table est au plafond et le sol est en bas de l'écran. Les couleurs sont plus sombres (murs gris-brun au lieu de beige, porte presque noire, fenêtres bleu sombre) et les ombres sont plus floues et plus étendues. Sur premiere.png (Software), la salle est à l'endroit, claire, avec des ombres nettes mais crénelées. Le temps moyen par image baisse de 128.15 ms à 92.86 ms avec OpenGL.

@@ -1,0 +1,102 @@
+import os
+from Jenga import *
+from Jenga.GlobalToolchains import RegisterJengaGlobalToolchains
+
+
+
+with workspace("MaSalleWks", location="."):
+    RegisterJengaGlobalToolchains()
+
+    androidsdkpath(os.getenv("ANDROID_SDK_ROOT", ""))
+    androidndkpath(os.getenv("ANDROID_NDK_ROOT", os.getenv("ANDROID_NDK_HOME", "")))
+
+    configurations(["Debug", "Release"])
+    targetoses([TargetOS.WINDOWS])
+    targetarchs([TargetArch.X86_64])
+
+    # NKWindow : bibliotheque statique, construite par Jenga lui-meme
+    with project("NKWindow"):
+        staticlib()
+        language("C++")
+        cppdialect("C++17")
+        location("NKWindow")
+
+        includedirs(["src", "../Externals"])
+
+        files([
+            "src/NKWindow/Core/**.cpp",
+            "src/NKWindow/Core/**.h",
+            "src/NKWindow/Core/**.hpp",
+            "src/NKWindow/Renderer/**.cpp",
+            "src/NKWindow/Renderer/**.h",
+        ])
+
+        objdir("%{wks.location}/Build/Obj/%{cfg.buildcfg}-%{cfg.system}/%{prj.name}")
+        targetdir("%{wks.location}/Build/Bin/%{cfg.buildcfg}-%{cfg.system}/%{prj.name}")
+
+        with filter("system:Windows"):
+            defines([
+                "NKENTSEU_PLATFORM_WIN32=1",
+                "NKENTSEU_PLATFORM_WINDOWS=1",
+                "WIN32_LEAN_AND_MEAN",
+                "NOMINMAX",
+                "_UNICODE",
+                "UNICODE",
+            ])
+            files([
+                "src/NKWindow/Platform/Win32/**.cpp",
+                "src/NKWindow/Platform/Win32/**.h",
+            ])
+            links([
+                "user32", "gdi32", "opengl32", "dwmapi", "shell32", "xinput",
+                "mf", "mfplat", "mfreadwrite", "mfuuid", "uuid", "ole32",
+            ])
+
+        with filter("config:Debug"):
+            defines(["_DEBUG", "DEBUG"])
+            optimize("Off")
+            symbols(True)
+            runtime("Debug")
+
+        with filter("config:Release"):
+            defines(["NDEBUG", "RELEASE"])
+            optimize("Speed")
+            symbols(False)
+            runtime("Release")
+
+    # MaSalle : la fenetre nue (main.cpp)
+    startproject("MaSalle")
+
+    with project("MaSalle"):
+        windowedapp()
+        language("C++")
+        cppdialect("C++17")
+        location(".")
+
+        files(["main.cpp"])
+        includedirs(["NKWindow/src", "Externals"])
+
+        links(["NKWindow"])
+        dependson(["NKWindow"])
+
+        objdir("%{wks.location}/Build/Obj/%{cfg.buildcfg}-%{cfg.system}/%{prj.name}")
+        targetdir("%{wks.location}/Build/Bin/%{cfg.buildcfg}-%{cfg.system}/%{prj.name}")
+
+        with filter("system:Windows"):
+            defines(["NKENTSEU_PLATFORM_WIN32=1", "NOMINMAX"])
+            links([
+                "user32", "gdi32", "opengl32", "dwmapi", "shell32", "xinput",
+                "mf", "mfplat", "mfreadwrite", "mfuuid", "uuid", "ole32",
+            ])
+
+        with filter("config:Debug"):
+            defines(["_DEBUG"])
+            runtime("Debug")
+            optimize("Off")
+            symbols(True)
+
+        with filter("config:Release"):
+            defines(["NDEBUG"])
+            runtime("Release")
+            optimize("Speed")
+            symbols(False)

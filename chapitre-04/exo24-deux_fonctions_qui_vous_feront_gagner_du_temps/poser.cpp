@@ -16,7 +16,6 @@
 using namespace nkentseu;
 using namespace nkentseu::renderer;
 
-// --- La salle (en mètres) : l'origine est au centre du sol, le sol est à y = 0. ---
 static const float INTERIEUR = 4.0f;
 static const float HAUTEUR = 2.50f;
 static const float EP_MUR = 0.10f;
@@ -30,13 +29,13 @@ static const float FENETRE_H = 1.00f;
 static const float FENETRE_Y = 1.40f;
 static const float FENETRE_Z1 = -0.90f;
 static const float FENETRE_Z2 = 0.90f;
-static const float AVANCE = 0.002f; // décalage des panneaux vers l'intérieur
+static const float AVANCE = 0.002f;
 
 static const float TABLE_X = 0.60f;
 static const float TABLE_Z = 0.70f;
 static const float TABLE_LONGUEUR = 1.20f;
 static const float TABLE_PROFONDEUR = 0.80f;
-static const float TABLE_DESSUS = 0.75f; // hauteur du DESSUS du plateau
+static const float TABLE_DESSUS = 0.75f;
 static const float TABLE_EPAISSEUR = 0.05f;
 static const float PIED_SECTION = 0.06f;
 
@@ -45,20 +44,14 @@ static void ConfigureAppData(NkAppData &d) {
 }
 NK_REGISTER_ENTRY_APPDATA_UPDATER(ConfigureAppData)
 
-// === SALLE : DEBUT (comptage des lignes) ====================================
-
-// Pose un objet sur le sol : son dessous est à y = 0, donc son centre à la moitié de sa hauteur.
-// taille : les trois dimensions ; x, z : la place du centre, vue de dessus.
 NkMat4f PoserAuSol(NkVec3f taille, float x, float z) {
 	return NkMat4f::Translate({x, taille.y * 0.5f, z}) * NkMat4f::Scale(taille);
 }
 
-// Pose un objet sur le dessus de la table : son dessous est à 0,75 m.
 NkMat4f PoserSurTable(NkVec3f taille, float x, float z) {
 	return NkMat4f::Translate({x, TABLE_DESSUS + taille.y * 0.5f, z}) * NkMat4f::Scale(taille);
 }
 
-// Envoie un cube au renderer ; la boîte englobante vient de la transformation elle-même.
 static void Soumettre(NkRender3D *r3d, NkMeshHandle cube, const NkMat4f &m, NkVec3f couleur) {
 	NkDrawCall3D d;
 	d.mesh = cube;
@@ -76,11 +69,10 @@ static void ConstruireSalle(NkRender3D *r3d, NkMeshHandle cube) {
 	const NkVec3f bois{0.62f, 0.42f, 0.22f}, pied{0.42f, 0.27f, 0.13f};
 
 	const float large = INTERIEUR + 2.f * EP_MUR;
-	const float murZ = -(INTERIEUR * 0.5f + EP_MUR * 0.5f); // centre du mur du fond : -2,05
-	const float faceZ = murZ + EP_MUR * 0.5f;               // face intérieure : -2,00
-	const float faceX = -(INTERIEUR * 0.5f);                // face intérieure du mur de gauche : -2,00
+	const float murZ = -(INTERIEUR * 0.5f + EP_MUR * 0.5f);
+	const float faceZ = murZ + EP_MUR * 0.5f;
+	const float faceX = -(INTERIEUR * 0.5f);
 
-	// Ce qui repose sur le sol : PoserAuSol.
 	Soumettre(r3d, cube, PoserAuSol({large, HAUTEUR, EP_MUR}, 0.f, murZ), mur);
 	Soumettre(r3d, cube, PoserAuSol({large, HAUTEUR, EP_MUR}, 0.f, -murZ), mur);
 	Soumettre(r3d, cube, PoserAuSol({EP_MUR, HAUTEUR, INTERIEUR}, murZ, 0.f), mur);
@@ -93,11 +85,9 @@ static void ConstruireSalle(NkRender3D *r3d, NkMeshHandle cube) {
 		for (int sz = -1; sz <= 1; sz += 2)
 			Soumettre(r3d, cube, PoserAuSol({PIED_SECTION, piedH, PIED_SECTION}, TABLE_X + sx * dx, TABLE_Z + sz * dz), pied);
 
-	// Ce qui est posé sur la table : PoserSurTable.
-	Soumettre(r3d, cube, PoserSurTable({0.30f, 0.04f, 0.21f}, 0.40f, 0.60f), fenetre);  // un livre, plat
-	Soumettre(r3d, cube, PoserSurTable({0.08f, 0.12f, 0.08f}, 0.85f, 0.80f), porte);    // une tasse
+	Soumettre(r3d, cube, PoserSurTable({0.30f, 0.04f, 0.21f}, 0.40f, 0.60f), fenetre);
+	Soumettre(r3d, cube, PoserSurTable({0.08f, 0.12f, 0.08f}, 0.85f, 0.80f), porte);
 
-	// Le reste ne repose pas sur le sol : transformation écrite à la main.
 	Soumettre(r3d, cube, NkMat4f::Translate({0.f, -EP_MUR * 0.5f, 0.f}) * NkMat4f::Scale({large, EP_MUR, large}), sol);
 	Soumettre(r3d, cube, NkMat4f::Translate({0.f, HAUTEUR + EP_MUR * 0.5f, 0.f}) * NkMat4f::Scale({large, EP_MUR, large}), mur);
 	const float fenetreX = faceX - EP_PANNEAU * 0.5f + AVANCE;
@@ -106,12 +96,9 @@ static void ConstruireSalle(NkRender3D *r3d, NkMeshHandle cube) {
 	Soumettre(r3d, cube, NkMat4f::Translate({TABLE_X, TABLE_DESSUS - TABLE_EPAISSEUR * 0.5f, TABLE_Z}) * NkMat4f::Scale({TABLE_LONGUEUR, TABLE_EPAISSEUR, TABLE_PROFONDEUR}), bois);
 }
 
-// === SALLE : FIN ============================================================
-
-// Vérification sur des tailles dont les trois dimensions diffèrent : le dessous doit être à 0 ou à 0,75.
 static void Verifier() {
-	const NkVec3f pave{0.30f, 0.04f, 0.21f}; // un pavé plat
-	const NkVec3f haut{0.20f, 1.50f, 0.40f}; // un pavé haut
+	const NkVec3f pave{0.30f, 0.04f, 0.21f};
+	const NkVec3f haut{0.20f, 1.50f, 0.40f};
 	const float sol1 = NkAABB::Unit().Transformed(PoserAuSol(pave, 1.f, 2.f)).min.y;
 	const float sol2 = NkAABB::Unit().Transformed(PoserAuSol(haut, 1.f, 2.f)).min.y;
 	const float tab1 = NkAABB::Unit().Transformed(PoserSurTable(pave, 0.4f, 0.6f)).min.y;

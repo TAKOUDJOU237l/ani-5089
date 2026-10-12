@@ -1,0 +1,3 @@
+Un par un : A REMPLIR (nombre de cubes au seuil, drawCalls, cadence)
+Groupés : A REMPLIR (drawCalls, cadence pour les memes cubes, nouveau seuil)
+Trouvé : A REMPLIR (nom trouve et fichier d'en-tete qui le declare)

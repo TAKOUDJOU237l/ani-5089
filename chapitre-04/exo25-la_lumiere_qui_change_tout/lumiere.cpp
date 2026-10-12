@@ -15,8 +15,6 @@
 using namespace nkentseu;
 using namespace nkentseu::renderer;
 
-// Un seul réglage change à la fois :
-// 0 = départ, 1 = direction changée, 2 = intensité changée, 3 = ombres coupées
 #define REGLAGE 0
 
 
@@ -85,7 +83,6 @@ static void ConstruireSalle(NkRender3D *r3d, NkMeshHandle cube) {
 	const float murZ = -(INTERIEUR * 0.5f + EP_MUR * 0.5f); 
 	const float faceZ = murZ + EP_MUR * 0.5f;               
 	const float faceX = -(INTERIEUR * 0.5f);               
-	// Ce qui repose sur le sol : PoserAuSol.
 	Soumettre(r3d, cube, PoserAuSol({large, HAUTEUR, EP_MUR}, 0.f, murZ), mur);
 	Soumettre(r3d, cube, PoserAuSol({large, HAUTEUR, EP_MUR}, 0.f, -murZ), mur);
 	Soumettre(r3d, cube, PoserAuSol({EP_MUR, HAUTEUR, INTERIEUR}, murZ, 0.f), mur);

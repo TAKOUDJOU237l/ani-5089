@@ -1,0 +1,1 @@
+A REMPLIR : du plus cher au moins cher, avec le surcout par rapport au rendu 3D seul (calcule a partir de mesures.txt).

@@ -1,0 +1,3 @@
+Je garde : A REMPLIR (liste des sous-systemes retenus avec leur cout ; total sous 11 ms soit 11000 us par image).
+
+Pourquoi : A REMPLIR (une justification par sous-systeme garde).
