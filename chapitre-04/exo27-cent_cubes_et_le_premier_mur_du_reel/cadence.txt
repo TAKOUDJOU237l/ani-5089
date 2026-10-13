@@ -1,3 +1,7 @@
-Un par un : A REMPLIR (nombre de cubes au seuil, drawCalls, cadence)
-Groupés : A REMPLIR (drawCalls, cadence pour les memes cubes, nouveau seuil)
-Trouvé : A REMPLIR (nom trouve et fichier d'en-tete qui le declare)
+Un par un : 1602 cubes, drawCalls 8258, 3,2 images par seconde (mesure sur 400 images).
+Ma salle seule tourne déjà sous 60 images par seconde (14,6 images par seconde, 32 drawCalls), donc le seuil retenu est la moitié de cette cadence, soit 7,3 images par seconde, et non 60. Avant ce seuil, drawCalls vaut environ 6 par cube : 332 pour 50 cubes, 1454 pour 237 cubes.
+
+Groupés : drawCalls 9644, 1,8 image par seconde pour les mêmes 1602 cubes, nouveau seuil 237 cubes.
+Le groupement n'a réduit ni drawCalls (9644 contre 8258) ni amélioré la cadence : aucun gain mesuré. Je n'ai pas vérifié la cause : la salle seule est déjà lente sur ma machine, et ce coût fixe domine les mesures.
+
+Trouvé : NkDrawCallInstanced, soumis avec SubmitInstanced de NkRender3D, déclaré dans NKRenderer/Core/NkRendererTypes.h.

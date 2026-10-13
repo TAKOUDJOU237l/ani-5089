@@ -1,4 +1,4 @@
-// cubes.cpp : cent cubes soumis un par un, puis groupés ; seuil de cadence.
+// cubes.cpp : cubes soumis un par un, puis groupés (NkDrawCallInstanced) ; seuil de cadence.
 #include <chrono>
 #include <cstdio>
 #include <vector>
@@ -18,6 +18,10 @@
 
 using namespace nkentseu;
 using namespace nkentseu::renderer;
+
+// true  : test rapide (quelques nombres de cubes, un par un puis groupés), puis arrêt.
+// false : mesure complète des seuils, écrite dans cadence_mesures.txt.
+static const bool DIAGNOSTIC = false;
 
 static void ConfigureAppData(NkAppData &d) {
 	d.appName = "Cubes";
@@ -65,6 +69,9 @@ static const int PAR_COUCHE = PAR_COTE * PAR_COTE;
 static const float GRILLE_MIN = -1.8f;  // coin de départ en x et z
 static const NkVec3f COULEUR_CUBE{0.9f, 0.4f, 0.2f};
 
+// Instances max par dessin : kMaxInstancesUBO dans NkRender3D.h (ligne 518).
+static const int PAQUET = 128;
+
 static NkMat4f MatriceCube(int i) {
 	const int couche = i / PAR_COUCHE;
 	const int r = i % PAR_COUCHE;
@@ -94,8 +101,8 @@ struct Resultat {
 	int drawCalls;
 };
 
-// Mesure la cadence sur 'images' images, avec n cubes soumis un par un
-// (groupe = false) ou d'un seul appel via NkDrawCallInstanced (groupe = true).
+// Mesure la cadence sur 'images' images avec n cubes, soumis un par un
+// (groupe = false) ou par paquets via NkDrawCallInstanced (groupe = true).
 static Resultat Mesurer(NkRenderer *renderer, NkRender3D *r3d, NkMeshHandle cube, NkMeshHandle plan,
                         int n, bool groupe, int images, bool afficher, uint32 W, uint32 H) {
 	NkEventSystem &events = NkEvents();
@@ -107,7 +114,6 @@ static Resultat Mesurer(NkRenderer *renderer, NkRender3D *r3d, NkMeshHandle cube
 	for (int i = 0; i < n; ++i)
 		matrices.push_back(MatriceCube(i));
 
-	const int PAQUET = 128;
 	std::vector<NkDrawCallInstanced> paquets;
 	if (groupe && n > 0) {
 		const NkAABB boite = BoiteDuGroupe(n);
@@ -175,7 +181,7 @@ static Resultat Mesurer(NkRenderer *renderer, NkRender3D *r3d, NkMeshHandle cube
 			t0 = std::chrono::steady_clock::now();
 			tPalier = t0;
 		}
-		// Affichage console : cadence et drawCalls tous les 100 images.
+		// Console : cadence et drawCalls tous les 100 images.
 		if (afficher && frame > CHAUFFE && (frame - CHAUFFE) % 100 == 0) {
 			auto now = std::chrono::steady_clock::now();
 			std::chrono::duration<double> dt = now - tPalier;
@@ -192,10 +198,23 @@ static Resultat Mesurer(NkRenderer *renderer, NkRender3D *r3d, NkMeshHandle cube
 	return r;
 }
 
-// Cherche le nombre de cubes à partir duquel la cadence tombe sous 'cible'.
+// Répète la salle seule jusqu'à stabilisation : les premières mesures paient les chargements.
+static void Stabiliser(NkRenderer *rd, NkRender3D *r3d, NkMeshHandle cube, NkMeshHandle plan, uint32 W, uint32 H) {
+	double prec = 0.0;
+	for (int i = 1; i <= 8; ++i) {
+		Resultat r = Mesurer(rd, r3d, cube, plan, 0, false, 100, false, W, H);
+		std::printf("  base %d : %.1f fps\n", i, r.fps);
+		std::fflush(stdout);
+		if (i > 1 && r.fps > prec * 0.9 && r.fps < prec * 1.1)
+			return;
+		prec = r.fps;
+	}
+}
+
+// Premier nombre de cubes (par paliers croissants) dont la cadence tombe sous 'cible'.
 static int ChercherSeuil(NkRenderer *rd, NkRender3D *r3d, NkMeshHandle cube, NkMeshHandle plan,
-                         bool groupe, double cible, int depart, uint32 W, uint32 H) {
-	int n = depart;
+                         bool groupe, double cible, uint32 W, uint32 H) {
+	int n = 50;
 	for (;;) {
 		Resultat r = Mesurer(rd, r3d, cube, plan, n, groupe, 60, false, W, H);
 		std::printf("  essai %s : %d cubes -> %.1f fps, drawCalls %d\n",
@@ -204,6 +223,61 @@ static int ChercherSeuil(NkRenderer *rd, NkRender3D *r3d, NkMeshHandle cube, NkM
 		if (r.fps < cible || n > 300000)
 			return n;
 		n = (int)(n * 1.5) + 50;
+	}
+}
+
+// ------------------------------------------------------------ Diagnostic
+// Mêmes n cubes, un par un puis groupés : montre si le groupement réduit les drawCalls.
+static void Diagnostic(NkRenderer *rd, NkRender3D *r3d, NkMeshHandle cube, NkMeshHandle plan, uint32 W, uint32 H) {
+	const int TESTS[] = {100, 128, 129, 256, 1000};
+	for (int k = 0; k < 5; ++k) {
+		Resultat u = Mesurer(rd, r3d, cube, plan, TESTS[k], false, 60, false, W, H);
+		std::printf("TEST %d un-par-un : drawCalls %d, %.1f fps\n", TESTS[k], u.drawCalls, u.fps);
+		std::fflush(stdout);
+		Resultat g = Mesurer(rd, r3d, cube, plan, TESTS[k], true, 60, false, W, H);
+		std::printf("TEST %d groupes : drawCalls %d, %.1f fps\n", TESTS[k], g.drawCalls, g.fps);
+		std::fflush(stdout);
+	}
+}
+
+// -------------------------------------------------------- Mesure complète
+static void MesureComplete(NkRenderer *rd, NkRender3D *r3d, NkMeshHandle cube, NkMeshHandle plan, uint32 W, uint32 H) {
+	// 1. Salle seule, une fois la machine stabilisée : si elle est déjà sous 60 fps,
+	//    le seuil vaut la moitié de sa cadence.
+	std::printf("Salle seule : stabilisation\n");
+	Stabiliser(rd, r3d, cube, plan, W, H);
+	std::printf("Salle seule : mesure\n");
+	Resultat base = Mesurer(rd, r3d, cube, plan, 0, false, 400, true, W, H);
+	const double cible = (base.fps >= 60.0) ? 60.0 : base.fps / 2.0;
+	std::printf("Salle seule : %.1f fps, drawCalls %d -> seuil = %.1f fps\n", base.fps, base.drawCalls, cible);
+
+	// 2. Un par un : seuil, puis mesure sur 400 images.
+	std::printf("Un par un : recherche du seuil\n");
+	const int n1 = ChercherSeuil(rd, r3d, cube, plan, false, cible, W, H);
+	std::printf("Un par un : mesure de %d cubes\n", n1);
+	Resultat a = Mesurer(rd, r3d, cube, plan, n1, false, 400, true, W, H);
+	std::printf("Un par un : %d cubes, drawCalls %d, %.1f fps\n", n1, a.drawCalls, a.fps);
+
+	// 3. Groupés, mêmes cubes.
+	std::printf("Groupes : mesure de %d cubes\n", n1);
+	Resultat b = Mesurer(rd, r3d, cube, plan, n1, true, 400, true, W, H);
+	std::printf("Groupes : %d cubes, drawCalls %d, %.1f fps\n", n1, b.drawCalls, b.fps);
+
+	// 4. Groupés : nouveau seuil, cherché depuis 50 cubes comme pour un par un.
+	std::printf("Groupes : recherche du nouveau seuil\n");
+	const int n2 = ChercherSeuil(rd, r3d, cube, plan, true, cible, W, H);
+	std::printf("Groupes : nouveau seuil = %d cubes\n", n2);
+
+	const bool gain = (b.fps > a.fps) && (n2 > n1);
+	std::printf("Verdict : %s\n", gain ? "le groupement ameliore la cadence" : "aucun gain mesure avec le groupement");
+
+	FILE *f = std::fopen("cadence_mesures.txt", "w");
+	if (f) {
+		std::fprintf(f, "Salle seule : %.1f fps, drawCalls %d, seuil %.1f fps\n", base.fps, base.drawCalls, cible);
+		std::fprintf(f, "Un par un : %d cubes, drawCalls %d, %.1f fps\n", n1, a.drawCalls, a.fps);
+		std::fprintf(f, "Groupes : drawCalls %d, %.1f fps, nouveau seuil %d cubes\n", b.drawCalls, b.fps, n2);
+		std::fprintf(f, "Verdict : %s\n", gain ? "gain" : "aucun gain mesure");
+		std::fclose(f);
 	}
 }
 
@@ -260,41 +334,15 @@ int nkmain(const NkEntryState &state) {
 	const uint32 W = devInfo.width;
 	const uint32 H = devInfo.height;
 
-	// 1. Salle seule : si elle est déjà sous 60 fps, le seuil vaut la moitié de sa cadence.
-	std::printf("Salle seule :\n");
-	Resultat base = Mesurer(renderer, r3d, cube, plan, 0, false, 400, true, W, H);
-	const double cible = (base.fps >= 60.0) ? 60.0 : base.fps / 2.0;
-	std::printf("Salle seule : %.1f fps, drawCalls %d -> seuil = %.1f fps\n", base.fps, base.drawCalls, cible);
-
-	// 2. Un par un : seuil, puis mesure sur 400 images.
-	std::printf("Un par un : recherche du seuil\n");
-	const int n1 = ChercherSeuil(renderer, r3d, cube, plan, false, cible, 50, W, H);
-	std::printf("Un par un : mesure de %d cubes\n", n1);
-	Resultat a = Mesurer(renderer, r3d, cube, plan, n1, false, 400, true, W, H);
-	std::printf("Un par un : %d cubes, drawCalls %d, %.1f fps\n", n1, a.drawCalls, a.fps);
-
-	// 3. Groupés, mêmes cubes.
-	std::printf("Groupes : mesure de %d cubes\n", n1);
-	Resultat b = Mesurer(renderer, r3d, cube, plan, n1, true, 400, true, W, H);
-	std::printf("Groupes : %d cubes, drawCalls %d, %.1f fps\n", n1, b.drawCalls, b.fps);
-
-	// 4. Groupés, nouveau seuil.
-	std::printf("Groupes : recherche du nouveau seuil\n");
-	const int n2 = ChercherSeuil(renderer, r3d, cube, plan, true, cible, n1, W, H);
-	std::printf("Groupes : nouveau seuil = %d cubes\n", n2);
-
-	FILE *f = std::fopen("cadence_mesures.txt", "w");
-	if (f) {
-		std::fprintf(f, "Salle seule : %.1f fps, drawCalls %d, seuil %.1f fps\n", base.fps, base.drawCalls, cible);
-		std::fprintf(f, "Un par un : %d cubes, drawCalls %d, %.1f fps\n", n1, a.drawCalls, a.fps);
-		std::fprintf(f, "Groupes : drawCalls %d, %.1f fps, nouveau seuil %d cubes\n", b.drawCalls, b.fps, n2);
-		std::fclose(f);
-	}
+	if (DIAGNOSTIC)
+		Diagnostic(renderer, r3d, cube, plan, W, H);
+	else
+		MesureComplete(renderer, r3d, cube, plan, W, H);
 
 	device->WaitIdle();
 	NkRenderer::Destroy(renderer);
 	NkDeviceFactory::Destroy(device);
 	window.Close();
-	std::printf("Termine : voir cadence_mesures.txt\n");
+	std::printf("Termine\n");
 	return 0;
 }
