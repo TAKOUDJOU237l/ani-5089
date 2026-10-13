@@ -1,4 +1,8 @@
-A REMPLIR avec VOS mesures (Release, moyenne sur 400 images, en microsecondes), une par ligne :
-NK_SS_RENDER3D : ... us
-NK_SS_RENDER3D + <sous-systeme 2> : ... us
-(au moins six lignes, ajoutez un sous-systeme a la fois)
+RENDER3D : 146006 us
+RENDER3D+SHADOW : 117163 us
+RENDER3D+POST_PROCESS : 135404 us
+RENDER3D+VFX : 103898 us
+RENDER3D+ANIMATION : 147074 us
+RENDER3D+OFFSCREEN : 135662 us
+RENDER3D+GPU_CULLING : 105572 us
+RENDER3D (controle) : 152564 us

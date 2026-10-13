@@ -1,3 +1,3 @@
-Je garde : A REMPLIR (liste des sous-systemes retenus avec leur cout ; total sous 11 ms soit 11000 us par image).
+Je garde : RENDER3D (146006 us), SHADOW (117163 us)
 
-Pourquoi : A REMPLIR (une justification par sous-systeme garde).
+Pourquoi : RENDER3D est indispensable, il dessine les maillages de la salle. SHADOW est gardé parce que les ombres servent à lire les distances et les volumes (exercice sur la lumière), et sa mesure (117163 us) n'est pas plus chère que la base : son surcoût réel est trop petit pour être distingué du bruit. Je retire POST_PROCESS, VFX, ANIMATION, OFFSCREEN et GPU_CULLING : la salle n'a ni particules, ni personnage animé, ni rendu vers texture, et je n'ai aucune mesure fiable qui justifie leur coût. Le budget de onze millisecondes (11000 us) n'est pas tenu sur ma machine : le rendu 3D seul prend environ 146000 us sur une carte Intel UHD 620, bien plus faible qu'un casque autonome. Je n'ai donc pas pu vérifier ce budget ; j'ai choisi d'après le besoin de la salle et non d'après le total mesuré.

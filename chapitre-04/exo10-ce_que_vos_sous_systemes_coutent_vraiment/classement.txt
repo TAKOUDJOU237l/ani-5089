@@ -1,1 +1,10 @@
-A REMPLIR : du plus cher au moins cher, avec le surcout par rapport au rendu 3D seul (calcule a partir de mesures.txt).
+Classement du plus cher au moins cher (surcout par rapport a RENDER3D seul = 146006 us) :
+1. ANIMATION : 147074 us (+1068 us)
+2. OFFSCREEN : 135662 us (-10344 us)
+3. POST_PROCESS : 135404 us (-10602 us)
+4. SHADOW : 117163 us (-28843 us)
+5. GPU_CULLING : 105572 us (-40434 us)
+6. VFX : 103898 us (-42108 us)
+
+Controle : RENDER3D mesure une seconde fois = 152564 us, soit 6558 us d'ecart avec la premiere mesure.
+Les surcouts negatifs ne sont pas de vrais gains : le bruit de la machine (plus de 6000 us sur la meme configuration, et jusqu'a 40000 us entre essais) est plus grand que le cout reel des sous-systemes.

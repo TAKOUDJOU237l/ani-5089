@@ -46,10 +46,10 @@ static void ConstruireSalle(NkRender3D *r3d, NkMeshHandle cube, NkMeshHandle pla
 
 	Soumettre(r3d, plan, NkMat4f::Translate({0.f, 0.f, 0.f}) * NkMat4f::Scale({INTERIEUR, 1.f, INTERIEUR}), sol);
 
-	Soumettre(r3d, cube, NkMat4f::Translate({0.f, milieu, -decal}) * NkMat4f::Scale({large, HAUTEUR, EP}), mur);
-	Soumettre(r3d, cube, NkMat4f::Translate({0.f, milieu, decal}) * NkMat4f::Scale({large, HAUTEUR, EP}), mur);
-	Soumettre(r3d, cube, NkMat4f::Translate({-decal, milieu, 0.f}) * NkMat4f::Scale({EP, HAUTEUR, INTERIEUR}), mur);
-	Soumettre(r3d, cube, NkMat4f::Translate({decal, milieu, 0.f}) * NkMat4f::Scale({EP, HAUTEUR, INTERIEUR}), mur);
+	Soumettre(r3d, cube, NkMat4f::Scale({large, HAUTEUR, EP}) * NkMat4f::Translate({0.f, milieu, -decal}), mur);
+	Soumettre(r3d, cube, NkMat4f::Scale({large, HAUTEUR, EP}) * NkMat4f::Translate({0.f, milieu, decal}), mur);
+	Soumettre(r3d, cube, NkMat4f::Scale({EP, HAUTEUR, INTERIEUR}) * NkMat4f::Translate({-decal, milieu, 0.f}), mur);
+	Soumettre(r3d, cube, NkMat4f::Scale({EP, HAUTEUR, INTERIEUR}) * NkMat4f::Translate({decal, milieu, 0.f}), mur);
 
 	Soumettre(r3d, cube, NkMat4f::Translate({0.f, HAUTEUR + EP * 0.5f, 0.f}) * NkMat4f::Scale({large, EP, large}), plafond);
 }
