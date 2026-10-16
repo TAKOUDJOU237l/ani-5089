@@ -1,9 +1,14 @@
-Position 1 : [camera pres de la fenetre : ce que vous entendez, de quel cote]
+Position 1 :
+Caméra près de la fenêtre, en (-1,40 ; 1,70 ; -0,90), regardant vers -Z. La pluie est placée à la première fenêtre en (-1,98 ; 1,40 ; -0,90), avec minDistance = 1,0 m et maxDistance = 8,0 m. La source est donc à 0,58 m, à gauche de la caméra, plus près que minDistance. J'ai entendu la pluie à droite, forte. Ce n'est pas ce que j'attendais : la source est à gauche de la caméra, et je m'attendais à l'entendre à gauche, au volume le plus fort.
 
-Position 2 : [camera au centre : ce que vous entendez]
+Position 2 :
+Caméra au centre, en (0 ; 1,70 ; 0), regardant vers -Z. La source est à environ 2,2 m, à gauche et un peu devant. J'ai entendu la pluie à droite, d'intensité moyenne. La force moyenne va dans le sens attendu (plus faible que près de la fenêtre), mais le côté est de nouveau l'inverse de ce que je m'attendais à entendre.
 
-Position 3 : [camera dans le coin oppose : ce que vous entendez]
+Position 3 :
+Caméra dans le coin opposé, en (1,70 ; 1,70 ; 1,70), regardant vers -Z. La source est à environ 4,5 m, à gauche et devant. J'ai entendu la pluie au milieu, d'intensité moyenne. Je m'attendais à une pluie à gauche et plus faible qu'au centre ; je l'ai trouvée aussi forte que depuis le centre, et sans côté net.
 
-Sans positional : [ce qui change]
+Sans positional :
+J'ai refait le coin avec MASALLE_POSITIONAL=0. J'ai entendu la pluie à gauche, forte. Ce qui change par rapport au coin avec positional : elle est plus forte, ce qui va dans le sens des mesures (0,157 contre 0,080). Le côté, lui, ne va pas dans le sens attendu : sans positional, le même signal devrait arriver dans les deux oreilles, sans direction, et je l'ai pourtant entendue à gauche. J'ai vérifié mon casque avec le test gauche/droite de Windows : le son annoncé « gauche » sort bien dans l'oreille gauche.
 
-Ce que les mesures montrent : [comparer G et D de mesures.txt a ce qu'on attendait, sans arranger les chiffres, et dire l'ecart]
+Ce que les mesures montrent :
+Avec positional et la source à 2 m, le moteur envoie le son d'un seul côté : à gauche, G = 0,080138 et D = 0,000000 ; à droite, G = 0,000000 et D = 0,080020 ; devant, G = D = 0,056744, ce qui vaut 0,0801 divisé par la racine de 2 (la puissance est répartie entre les deux oreilles). Sans positional, G et D sont égaux dans les trois cas (environ 0,1573 à 0,1576), et plus forts que les mesures placées : 0,080 / 0,157 = 0,51, soit une baisse de 5,9 dB à 2 m, qui ressemble à une décroissance en 1/distance (je n'ai pas fixé minDistance dans mesure.cpp, je n'ai donc pas vérifié la loi). L'oreille opposée vaut exactement 0 : c'est un panoramique pur, sans ombre de la tête. Les trois valeurs sans positional diffèrent un peu (0,157572 ; 0,157336 ; 0,157283) alors que le son est identique : je ne l'explique pas. L'écart avec mon écoute est net. Les mesures disent : source à gauche, à gauche seulement ; sans positional, pas de côté. J'ai entendu droite, droite, milieu, et gauche sans positional. Seules les forces s'accordent : plus fort sans positional, plus faible quand la source s'éloigne. Je ne rends pas les chiffres plus beaux : l'écoute ne confirme pas les mesures sur le côté. Je n'ai pas testé la cause. Deux pistes non vérifiées : SonPlace.cpp envoie à l'auditeur une direction qui a une composante verticale (la caméra regarde un peu vers le bas) alors que mesure.cpp prend toujours (0, 0, -1), et la sortie réelle (WASAPI) n'est pas la sortie nulle de la mesure. Une mesure avec la direction de la caméra du coin dans mesure.cpp dirait si le moteur ou ma façon d'écouter est en cause.

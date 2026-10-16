@@ -31,7 +31,7 @@ static void ConfigureAppData(NkAppData &d) {
 NK_REGISTER_ENTRY_APPDATA_UPDATER(ConfigureAppData)
 
 static const bool RETOURNER_VERTICAL = false;
-static const bool RETOURNER_HORIZONTAL = false;
+static const bool RETOURNER_HORIZONTAL = true;
 static const int ECHELLE = 8;
 
 float smoothstep(float a, float b, float x) {
@@ -56,13 +56,13 @@ static float LireBilineaire(const nkft_uint8 *pixels, int texL, int texH, float 
 	return (p00 * (1.f - fx) + p10 * fx) * (1.f - fy) + (p01 * (1.f - fx) + p11 * fx) * fy;
 }
 
-static NkImage FabriquerPanneau(const char *mot, bool sdf, float s, int &atlasL, int &atlasH) {
+static bool FabriquerPanneau(const char *mot, bool sdf, float s, int &atlasL, int &atlasH, NkImage &image) {
 	NkFontAtlas atlas;
 	atlas.sdfMode = sdf;
 	atlas.sdfSpread = 6;
 	NkFont *police = NkFontEmbedded::AddToAtlas(atlas, NkEmbeddedFontId::Inter, 32.f);
 	if (!police || !atlas.Build())
-		return NkImage();
+		return false;
 
 	nkft_uint8 *pixels = nullptr;
 	nkft_int32 texL = 0, texH = 0;
@@ -70,13 +70,35 @@ static NkImage FabriquerPanneau(const char *mot, bool sdf, float s, int &atlasL,
 	atlasL = atlas.texWidth;
 	atlasH = atlas.texHeight;
 
+	if (std::getenv("MASALLE_DUMP")) {
+		const NkFontGlyph *gs = police->FindGlyph((unsigned char)'S');
+		std::printf("%s S : x0 %.1f y0 %.1f x1 %.1f y1 %.1f u0 %.4f v0 %.4f u1 %.4f v1 %.4f avance %.1f\n",
+		            sdf ? "sdf" : "ordinaire", (double)gs->x0, (double)gs->y0, (double)gs->x1, (double)gs->y1,
+		            (double)gs->u0, (double)gs->v0, (double)gs->u1, (double)gs->v1, (double)gs->advanceX);
+		NkImage dump;
+		if (dump.Create((uint32)texL, (uint32)texH, math::NkColor(0, 0, 0, 255), 4)) {
+			int vmin = 255, vmax = 0;
+			for (int y = 0; y < texH; ++y) {
+				for (int x = 0; x < texL; ++x) {
+					const int v = pixels[y * texL + x];
+					if (v < vmin) vmin = v;
+					if (v > vmax) vmax = v;
+					dump.SetPixel(x, y, math::NkColor((uint8)v, (uint8)v, (uint8)v, 255));
+				}
+			}
+			dump.SavePNG(sdf ? "atlas-sdf.png" : "atlas-ordinaire.png");
+			std::printf("%s : valeurs de %d a %d\n", sdf ? "sdf" : "ordinaire", vmin, vmax);
+		}
+	}
+
 	float largeur = 0.f;
 	for (const char *c = mot; *c; ++c)
 		largeur += police->FindGlyph((unsigned char)*c)->advanceX;
 
 	const int L = (int)std::ceil(largeur) * ECHELLE;
 	const int H = (int)std::ceil(police->ascent - police->descent) * ECHELLE;
-	NkImage image = NkImage::Create(L, H, 4, 0x1F4E3DFF);
+	if (!image.Create((uint32)L, (uint32)H, math::NkColor(0x1F, 0x4E, 0x3D, 0xFF), 4))
+		return false;
 
 	const float fondR = 0x1F, fondG = 0x4E, fondB = 0x3D;
 	float curseur = 0.f;
@@ -110,7 +132,7 @@ static NkImage FabriquerPanneau(const char *mot, bool sdf, float s, int &atlasL,
 		}
 		curseur += g->advanceX;
 	}
-	return image;
+	return true;
 }
 
 static const float INTERIEUR = 4.0f;
@@ -280,13 +302,14 @@ int nkmain(const NkEntryState &state) {
 	NkRender3D *r3d = renderer->GetRender3D();
 	NkMeshHandle cube = renderer->GetMeshSystem()->GetCube();
 
-	float s = 0.06f;
+	float s = 0.02f;
 	if (const char *es = std::getenv("MASALLE_S"))
 		s = (float)std::atof(es);
 
 	int ordL = 0, ordH = 0, sdfL = 0, sdfH = 0, grandL = 0, grandH = 0;
-	NkImage ordinaire = FabriquerPanneau("Sortie", false, s, ordL, ordH);
-	NkImage signe = FabriquerPanneau("Sortie", true, s, sdfL, sdfH);
+	NkImage ordinaire, signe;
+	const bool okOrdinaire = FabriquerPanneau("Sortie", false, s, ordL, ordH, ordinaire);
+	const bool okSdf = FabriquerPanneau("Sortie", true, s, sdfL, sdfH, signe);
 	{
 		NkFontAtlas grand;
 		NkFont *police = NkFontEmbedded::AddToAtlas(grand, NkEmbeddedFontId::Inter, 128.f);
@@ -297,7 +320,7 @@ int nkmain(const NkEntryState &state) {
 		grandL = grand.texWidth;
 		grandH = grand.texHeight;
 	}
-	if (!ordinaire.IsValid() || !signe.IsValid()) {
+	if (!okOrdinaire || !okSdf || !ordinaire.IsValid() || !signe.IsValid()) {
 		logger.Error("[Sdf] atlas ou image KO");
 		return 5;
 	}

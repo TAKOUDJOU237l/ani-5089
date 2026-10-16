@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <cmath>
 #include <cstdlib>
 #include <cstring>
 #include <string>
@@ -31,13 +32,13 @@ static void ConfigureAppData(NkAppData &d) {
 NK_REGISTER_ENTRY_APPDATA_UPDATER(ConfigureAppData)
 
 static const bool RETOURNER_VERTICAL = false;
-static const bool RETOURNER_HORIZONTAL = false;
+static const bool RETOURNER_HORIZONTAL = true;
 
-static NkImage FabriquerPanneau(const char *mot, int &atlasL, int &atlasH) {
+static bool FabriquerPanneau(const char *mot, int &atlasL, int &atlasH, NkImage &image) {
 	NkFontAtlas atlas;
 	NkFont *police = NkFontEmbedded::AddToAtlas(atlas, NkEmbeddedFontId::Inter, 32.f);
 	if (!police || !atlas.Build())
-		return NkImage();
+		return false;
 
 	nkft_uint8 *pixels = nullptr;
 	nkft_int32 texL = 0, texH = 0;
@@ -51,7 +52,8 @@ static NkImage FabriquerPanneau(const char *mot, int &atlasL, int &atlasH) {
 
 	const int L = (int)std::ceil(largeur);
 	const int H = (int)std::ceil(police->ascent - police->descent);
-	NkImage image = NkImage::Create(L, H, 4, 0x1F4E3DFF);
+	if (!image.Create((uint32)L, (uint32)H, math::NkColor(0x1F, 0x4E, 0x3D, 0xFF), 4))
+		return false;
 
 	const float fondR = 0x1F, fondG = 0x4E, fondB = 0x3D;
 	float curseur = 0.f;
@@ -83,7 +85,7 @@ static NkImage FabriquerPanneau(const char *mot, int &atlasL, int &atlasH) {
 		}
 		curseur += g->advanceX;
 	}
-	return image;
+	return true;
 }
 
 static const float INTERIEUR = 4.0f;
@@ -254,8 +256,8 @@ int nkmain(const NkEntryState &state) {
 	NkMeshHandle cube = renderer->GetMeshSystem()->GetCube();
 
 	int atlasL = 0, atlasH = 0;
-	NkImage panneau = FabriquerPanneau("Sortie", atlasL, atlasH);
-	if (!panneau.IsValid()) {
+	NkImage panneau;
+	if (!FabriquerPanneau("Sortie", atlasL, atlasH, panneau) || !panneau.IsValid()) {
 		logger.Error("[Panneau] atlas ou image KO");
 		return 4;
 	}

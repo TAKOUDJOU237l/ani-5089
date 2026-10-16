@@ -1,8 +1,8 @@
-atlas : [L] x [H]
-image : [L] x [H]
+atlas : 512 x 512
+image : 72 x 32
 
-Ma police et sa taille : [Inter, 32 pixels, et ce que cela veut dire pour la nettete]
+Ma police et sa taille : Inter, 32 pixels. Le texte est créé à partir des glyphes de cette police dans l'atlas, qui mesure 512 x 512 pixels. Les lettres y sont rastérisées une seule fois, à 32 pixels, et l'image du panneau, de 72 x 32 pixels, est composée en lisant ces glyphes. Cette résolution limitée explique que le texte devienne flou quand on s'approche beaucoup.
 
-A trois metres : [ce que vous voyez sur trois-metres.png]
+A trois metres : sur trois-metres.png, le panneau mesure environ 75 pixels de large à l'écran, pour une image de 72 pixels de large, soit à peu près un pixel d'écran par pixel d'image. Le mot « Sortie » est net et lisible, mais petit dans la vue.
 
-A cinquante centimetres : [ce que vous voyez sur cinquante-cm.png, relie a la taille de l'atlas]
+A cinquante centimetres : sur cinquante-cm.png, le même panneau mesure environ 470 pixels de large, soit plus de 6 fois plus, pour la même image de 72 pixels : chaque pixel de l'image s'étale sur environ 6 pixels de l'écran. Les contours des lettres sont flous et en marches, parce que l'atlas a été rastérisé une seule fois, à 32 pixels, et ne contient aucune information plus fine que celle-là. Plus on s'approche, plus l'écart entre la taille à l'écran et la taille de l'image se creuse, et plus le défaut se voit.

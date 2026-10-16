@@ -1,4 +1,4 @@
-avant, projet : [ce que vous avez vu]
-avant, Build : [ce que vous avez vu, et la ligne de logs/app.log qui nomme murs/beton.png]
-apres, projet : [ce que vous avez vu]
-apres, Build : [ce que vous avez vu]
+avant, projet : Mur.exe lancé depuis le dossier cube. La texture se charge : « Texture chargee : murs/beton.png (1213x1297 sRGB) ». Le mur du fond porte la photo de béton.
+avant, Build : Mur.exe lancé depuis Build\Bin\Debug-Windows\Mur, sans rien changer au programme. Le chargement échoue et le mur du fond reste magenta (la texture de repli du moteur). Ligne de logs/app.log : [2026-10-16 11:56:26.642] [ERR] [default] [NkTextureLibrary.cpp:478 in Load] -> [NkTextureLibrary] Echec chargement texture : murs/beton.png
+apres, projet : [à compléter : lancez Chemin.exe depuis le dossier cube, puis recopiez ici ce que vous voyez et la ligne « Texture chargee » de logs/app.log]
+apres, Build : Chemin.exe lancé depuis Build\Bin\Debug-Windows\Chemin. La texture se charge, avec un chemin absolu trouvé par LocateResource : « Texture chargee : C:/Users/LENOVO/Desktop/cube/murs/beton.png (1213x1297 sRGB) ». Le mur du fond porte la photo de béton.

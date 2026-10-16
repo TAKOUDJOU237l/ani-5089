@@ -1,5 +1,8 @@
-A trois metres : [ordinaire-3m.png contre sdf-3m.png]
+A trois metres :
+Sur ordinaire-3m.png et sdf-3m.png, le mot « Sortie » est lisible dans les deux cas et les deux panneaux se ressemblent : à cette distance, une lettre ne couvre que quelques dizaines de pixels à l'écran, et on ne voit ni escalier ni flou qui permette de les départager. Les deux images du panneau font la même taille (576 x 256), donc seule la méthode change.
 
-A cinquante centimetres : [ordinaire-50cm.png contre sdf-50cm.png]
+A cinquante centimetres :
+Sur ordinaire-50cm.png, les bords des lettres sont doux, un peu flous, sans marche visible. Sur sdf-50cm.png (s = 0,15), les traits sont plus fins et les bords plus durs, mais de petites marches restent visibles sur les courbes du « S », du « o » et du « e ». Dans ma mesure, le SDF n'est donc pas plus net que l'ordinaire : il a un autre défaut, l'escalier, là où l'ordinaire a le flou.
 
-Ma conclusion : [la valeur de s retenue et pourquoi ; ce que la methode change ; la memoire : trois tailles d'atlas dans atlas.txt, et une image huit fois plus grande a soixante-quatre fois plus de pixels]
+Ma conclusion :
+J'ai essayé s = 0,01, 0,02, 0,04, 0,05, 0,08, 0,15 et 0,25 en vue 50 cm. Avec s de 0,01 à 0,08, les marches restent bien visibles : la zone de transition du smoothstep (de 0,5 - s à 0,5 + s) est plus étroite que ces marches. Avec s = 0,25, les marches disparaissent mais le trait devient fin, pâle et flou. Je retiens s = 0,15, le plus petit s qui gomme presque l'escalier sans flouter le mot. Ma lecture, que je n'ai pas vérifiée : les marches viennent de l'atlas SDF à 32 pixels, trop grossier, dont le contour garde la taille d'un texel (8 pixels une fois l'image agrandie huit fois) ; la méthode ne tient donc pas ici toute sa promesse. Côté mémoire, mes trois atlas font 512 x 512 pour l'ordinaire à 32 pixels, 512 x 512 pour le SDF à 32 pixels, et 2048 x 2048 pour l'ordinaire à 128 pixels (atlas.txt). Le SDF coûte donc exactement autant que l'ordinaire à 32 pixels (262 144 pixels), alors que l'ordinaire à 128 pixels en demande 4 194 304, soit 16 fois plus (4 fois plus de côté). Même logique pour l'image du panneau : huit fois plus grande, elle a 64 fois plus de pixels (576 x 256 = 147 456, contre 72 x 32 = 2 304).
