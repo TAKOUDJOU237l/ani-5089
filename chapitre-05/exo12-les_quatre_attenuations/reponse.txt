@@ -1,0 +1,5 @@
+La loi physique : [nommer le modele qui suit la loi d'une source ponctuelle, chiffres de mesures.txt a l'appui]
+
+Ce que change rolloff : [modele par modele, en comparant rolloff 1 et rolloff 2]
+
+Pour la porte du couloir : [le modele choisi, justifie par une distance et un gain]

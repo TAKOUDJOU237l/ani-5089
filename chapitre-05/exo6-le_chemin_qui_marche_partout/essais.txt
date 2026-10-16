@@ -1,0 +1,4 @@
+avant, projet : [ce que vous avez vu]
+avant, Build : [ce que vous avez vu, et la ligne de logs/app.log qui nomme murs/beton.png]
+apres, projet : [ce que vous avez vu]
+apres, Build : [ce que vous avez vu]

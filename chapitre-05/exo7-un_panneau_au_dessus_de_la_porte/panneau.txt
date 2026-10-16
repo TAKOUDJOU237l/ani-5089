@@ -1,0 +1,8 @@
+atlas : [L] x [H]
+image : [L] x [H]
+
+Ma police et sa taille : [Inter, 32 pixels, et ce que cela veut dire pour la nettete]
+
+A trois metres : [ce que vous voyez sur trois-metres.png]
+
+A cinquante centimetres : [ce que vous voyez sur cinquante-cm.png, relie a la taille de l'atlas]

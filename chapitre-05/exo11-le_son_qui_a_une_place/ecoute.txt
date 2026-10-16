@@ -1,0 +1,9 @@
+Position 1 : [camera pres de la fenetre : ce que vous entendez, de quel cote]
+
+Position 2 : [camera au centre : ce que vous entendez]
+
+Position 3 : [camera dans le coin oppose : ce que vous entendez]
+
+Sans positional : [ce qui change]
+
+Ce que les mesures montrent : [comparer G et D de mesures.txt a ce qu'on attendait, sans arranger les chiffres, et dire l'ecart]

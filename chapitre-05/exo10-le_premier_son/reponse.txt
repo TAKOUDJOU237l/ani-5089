@@ -1,0 +1,5 @@
+Lignes de mon premier son : [le nombre de lignes de l'initialisation a la fermeture comprises]
+
+Latence calculee et annoncee : un tampon de 256 trames a 48 000 hertz dure 256 / 48 000 = 0,005333 seconde, soit 5,333 millisecondes. Le moteur annonce [latence de demarrage.txt] millisecondes. [Comparer a la duree d'une image : 11,1 ms a 90 Hz.]
+
+Pourquoi pas dans la boucle de rendu : le tampon audio impose un delai minimum d'environ 5,3 millisecondes entre la demande d'un son et sa sortie, du meme ordre que le budget d'une image entiere. Le son joue sur un autre fil pendant que la boucle tourne : on ne le calcule jamais dans la boucle de rendu.

@@ -1,0 +1,8 @@
+Ce que rend Load :
+Load("murs/nexistepas.png") rend false : mon programme affiche « charge : 0, valide : 0, largeur : 0, hauteur : 0 ». Le fichier n'existe pas, donc charge vaut 0, IsValid() vaut 0 (l'objet NkImage ne contient aucune image) et la largeur et la hauteur valent 0, puisqu'il n'y a aucun pixel.
+
+Pourquoi rien ne plante :
+Load ne lance pas d'exception et n'arrete pas le programme : elle rend un resultat negatif (false) et laisse l'objet dans un etat vide mais coherent (valide a 0, taille 0 x 0). Mon programme recoit cette valeur et continue, puisqu'il ne lit aucun pixel sans avoir teste le retour de Load. La texture se comporte pareil : la bibliotheque de textures n'arrete rien, elle ecrit une ligne [ERR] dans logs/app.log (« Echec chargement texture : murs/nexistepas.png »), et le moteur continue avec un repli. Le journal le dit : « canal albedo lie : id=10 (blanc 1x1) -> REPLI BLANC : rien n'a ete pose sur l'albedo ». La panne est donc signalee dans le journal, mais le programme tourne normalement, ce qui la rend facile a manquer.
+
+Ce que montre le mur :
+Sur mur-absent.png, le mur du fond (celui de la porte) n'a pas de texture : il est d'un magenta uni, alors que les autres murs gardent leur couleur normale. C'est le mur rendu avec le repli du moteur, a la place de l'image absente. Le moteur a choisi de le montrer plutot que de s'arreter, pour que le programme continue a tourner, et avec une couleur criarde qui n'existe pas dans une salle normale, pour que l'erreur se voie tout de suite a l'ecran au lieu de passer inapercue.

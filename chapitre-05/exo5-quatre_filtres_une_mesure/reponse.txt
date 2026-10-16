@@ -1,0 +1,8 @@
+Ce que la comparaison montre :
+Sur les 65 536 pixels de l'image 256 x 256, le plus proche voisin (NK_NEAREST) diffère du bilinéaire sur 61 154 pixels, soit 93,3 %. Le bicubique (NK_BICUBIC) et le Lanczos3 (NK_LANCZOS3) diffèrent du bilinéaire sur 0 pixel : leur résultat est identique, pixel pour pixel, à celui du bilinéaire sur ma photo. Ma mesure ne montre donc aucun gain de qualité du bicubique ni du Lanczos3 par rapport au bilinéaire pour cette réduction de 2048 à 256. Elle ne m'apprend rien sur ce que ces filtres devraient donner en théorie : seulement ce que ce moteur a produit ici.
+
+L'ecart de temps que j'accepte :
+Mes moyennes sur 20 réductions, en Release : 654,7 us pour NK_NEAREST, 1705,2 us pour NK_BILINEAR, 1847,1 us pour NK_BICUBIC et 1538,6 us pour NK_LANCZOS3. L'écart entre le plus rapide (nearest) et le bilinéaire est de 1050 us, soit environ 1 ms par image. J'accepte jusqu'à 1100 us de plus par image, au chargement, pour avoir le bilinéaire à la place du nearest. Dans la boucle de rendu, je n'accepte aucun écart : à 90 Hz une image dure 11 111 us, et 1 ms par image représente près de 9 % de ce budget.
+
+Dans quel contexte :
+Une réduction se fait au chargement, une seule fois par texture, pas à chaque image : 20 textures réduites en bilinéaire coûtent environ 34 ms au total, soit un temps de chargement, pas un coût dans la boucle. Pour ce prix, j'évite les 93,3 % de pixels différents que donne le nearest, qui est plus rapide mais ne produit pas le même résultat. Comme le bicubique et le Lanczos3 donnent exactement le même résultat que le bilinéaire, ils n'apportent rien ici : je prends le bilinéaire, et mes temps de 1538 à 1847 us ne suffisent pas à les classer entre eux (une seule série de 20 mesures, sur un seul ordinateur).

@@ -1,0 +1,4 @@
+NK_NEAREST : 654.7 us, differences : 61154
+NK_BILINEAR : 1705.2 us, differences : 0
+NK_BICUBIC : 1847.1 us, differences : 0
+NK_LANCZOS3 : 1538.6 us, differences : 0

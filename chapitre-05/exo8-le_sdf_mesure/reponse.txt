@@ -1,0 +1,5 @@
+A trois metres : [ordinaire-3m.png contre sdf-3m.png]
+
+A cinquante centimetres : [ordinaire-50cm.png contre sdf-50cm.png]
+
+Ma conclusion : [la valeur de s retenue et pourquoi ; ce que la methode change ; la memoire : trois tailles d'atlas dans atlas.txt, et une image huit fois plus grande a soixante-quatre fois plus de pixels]

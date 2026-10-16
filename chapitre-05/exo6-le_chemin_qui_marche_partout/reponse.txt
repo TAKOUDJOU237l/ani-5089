@@ -1,0 +1,5 @@
+Ce qui a change : [le dossier courant : un chemin relatif part de l'endroit ou le programme est lance, pas de l'endroit du fichier source ni de l'executable]
+
+Ce que LocateResource essaie : Dans cet ordre, d'apres le commentaire de NkPath.h : 1. le dossier courant ; 2. le dossier de l'executable ; 3. les parents de l'executable, 8 niveaux au plus ; 4. les parents du dossier courant, 8 niveaux au plus. Dans chaque dossier, toutes les variantes sont essayees avant de passer au suivant. Un chemin absolu qui existe est rendu tel quel, et une chaine vide est rendue si rien n'est trouve.
+
+Deja vu avec fopen : [dites honnetement si vous avez reconnu le piege tout seul]

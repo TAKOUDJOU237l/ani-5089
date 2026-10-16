@@ -1,0 +1,8 @@
+Ma texture :
+Une photo que j'ai prise d'un mur de parpaings (briques de béton grises avec des joints clairs), enregistrée sous murs/beton.png. Elle fait 1213 x 1297 pixels, comme l'annonce la ligne du journal du moteur : « Texture chargee : murs/beton.png (1213x1297 sRGB) ». Je l'ai posée sur un seul mur, celui du fond (le mur de la porte) ; les trois autres murs, le sol et le plafond n'ont pas changé.
+
+Ce que le mur a gagné :
+Sur avant.png, le mur du fond est un aplat gris-brun uni : on le voit, mais rien ne permet de juger sa distance ni sa matière. Sur apres.png, du même point de vue, on distingue les rangées de parpaings, les joints et le grain de la surface, et ces motifs se resserrent vers le fond de la pièce. Le mur n'est plus seulement une couleur : sa matière donne une échelle (la taille d'une brique) et une impression de profondeur que l'aplat ne donnait pas.
+
+Ce qui m'a bloqué :
+Au premier essai, le mur est resté d'un magenta uni : le fichier murs/beton.png n'existait pas dans le dossier d'où je lançais le programme, et le journal affichait un échec de chargement. Une fois le fichier placé dans murs/, à côté de cube.jenga, la texture a été chargée (ligne « Texture chargee » dans logs/app.log). Elle apparaissait alors, mais très sombre, car ma première photo était foncée et le soleil éclairait le mur en lumière rasante : j'ai donc pris une photo plus claire.
