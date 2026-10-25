@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+# MaSalle.jenga : le workspace qui construit cout.cpp. La configuration Release optimise vraiment le code
+# (les deux lignes de l'enonce : with filter("config:Release"): optimize("Speed")).
+from Jenga import *
+from Jenga.GlobalToolchains import RegisterJengaGlobalToolchains
+
+with workspace("MaSalle", location="."):
+    RegisterJengaGlobalToolchains()
+
+    configurations(["Debug", "Release"])
+    targetoses([TargetOS.WINDOWS])
+    targetarchs([TargetArch.X86_64])
+
+    useconfig("R3D/R3D.jenga")
+
+    startproject("Cout")
+
+    with project("Cout"):
+        windowedapp()
+        language("C++")
+        cppdialect("C++17")
+        location(".")
+
+        files(["cout.cpp"])
+
+        objdir("%{wks.location}/Build/Obj/%{cfg.buildcfg}-%{cfg.system}/%{prj.name}")
+        targetdir("%{wks.location}/Build/Bin/%{cfg.buildcfg}-%{cfg.system}/%{prj.name}")
+
+        with filter("system:Windows"):
+            usetoolchain("clang-mingw")
+            defines(["WIN32_LEAN_AND_MEAN", "NOMINMAX", "_UNICODE", "UNICODE"])
+
+        with filter("config:Debug"):
+            defines(["_DEBUG"])
+            optimize("Off")
+            symbols(True)
+
+        user3d()
+
+        with filter("config:Release"):
+            defines(["NDEBUG"])
+            optimize("Speed")
+            symbols(False)

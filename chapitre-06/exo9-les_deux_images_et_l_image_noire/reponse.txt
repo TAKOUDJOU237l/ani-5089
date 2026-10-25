@@ -1,0 +1,8 @@
+Ce qui diffère le plus :
+[A remplir apres avoir regarde difference.png : ou sont les pixels les plus clairs ?]
+
+Pourquoi là :
+[Lire difference.png comme une carte des distances : les objets proches se deplacent davantage entre les deux yeux que les lointains. Exemples pris sur votre image.]
+
+Ce que prouve le noir :
+[Ce que prouve difference-vue-oubliee.png (noire) : que la seule difference vient du decalage des yeux ; et ce qu'elle ne prouve pas.]
