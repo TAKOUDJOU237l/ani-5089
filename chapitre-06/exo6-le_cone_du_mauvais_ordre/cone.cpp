@@ -285,7 +285,12 @@ int nkmain(const NkEntryState &state) {
 			accDX = 0;
 		}
 		const NkQuatf q = Orientation(lacet, ordre);
-		const NkVec3f tetePos = {0.30f, 1.70f, 1.20f};
+		NkVec3f tetePos = {0.30f, 1.70f, 1.20f};
+		if (const char *t = std::getenv("MASALLE_TETE")) { // position de la tete, en metres : "x,y,z"
+			float tx = 0.f, ty = 0.f, tz = 0.f;
+			if (std::sscanf(t, "%f,%f,%f", &tx, &ty, &tz) == 3)
+				tetePos = {tx, ty, tz};
+		}
 		pos = tetePos;
 		cible = tetePos + q * NkVec3f(0.f, 0.f, -1.f); // le regard vient du quaternion
 		haut = q * NkVec3f(0.f, 1.f, 0.f);               // et le haut aussi
