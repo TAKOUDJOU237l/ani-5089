@@ -19,6 +19,8 @@
 #include "NKRenderer/Mesh/NkMeshSystem.h"
 #include "NKRenderer/Tools/Render3D/NkRender3D.h"
 #include <cmath>
+#include <chrono>
+#include <thread>
 #include "NKEvent/NkMouseEvent.h"
 
 using namespace nkentseu;
@@ -141,6 +143,9 @@ static void ConstruireSalle(NkRender3D *r3d, NkMeshHandle cube, NkMaterial *murM
 //   MASALLE_SANS_CLIP=1  ne pas appeler ClipMouseToClient (essai : CaptureMouse seul)
 //   MASALLE_NAIF=1       R ne fait qu'UN ShowMouse(true), sans compter (essai : deux appuis de suite)
 //   MASALLE_OUBLI=1      ne pas rendre le pointeur en quittant (essai : fermeture sans relacher)
+//   MASALLE_ATTENDRE=1   (avec MASALLE_OUBLI=1) apres la fermeture de la fenetre, garder le processus en vie 10 secondes :
+//                        si le pointeur est libre pendant ces 10 s, c'est la fermeture de la fenetre qui le rend ;
+//                        s'il ne l'est qu'a la fin, c'est la fin du processus
 // =============================================================================
 namespace pointeur {
 
@@ -303,5 +308,10 @@ int nkmain(const NkEntryState &state) {
 	NkRenderer::Destroy(renderer);
 	NkDeviceFactory::Destroy(device);
 	window.Close();
+	// Essai : la fenetre est fermee, le processus vit encore. Le pointeur est-il deja libre ?
+	if (pointeur::Variable("MASALLE_OUBLI") && pointeur::Variable("MASALLE_ATTENDRE")) {
+		logger.Info("[Pointeur] fenetre fermee, attente de 10 s avant la fin du processus");
+		std::this_thread::sleep_for(std::chrono::seconds(10));
+	}
 	return 0;
 }
