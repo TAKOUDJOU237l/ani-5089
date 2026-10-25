@@ -200,9 +200,15 @@ int nkmain(const NkEntryState &state) {
 	// Les deux accumulateurs recoivent exactement les memes evenements bruts.
 	int accVide = 0;      // sera lu puis vide, une fois par image
 	int accSansVide = 0;  // sera lu a chaque image, JAMAIS vide (version voulue fautive)
+	// Le decompte demande : combien d'evenements bruts arrivent entre deux images ?
+	int nbEvenements = 0;                // evenements recus depuis l'image precedente
+	long long totalEvenements = 0;       // tous les evenements recus
+	long long imagesAvecEvenements = 0;  // images ou au moins un evenement est arrive
+	int maxParImage = 0;                 // le plus grand nombre d'evenements sur une seule image
 	events.AddEventCallback<NkMouseRawEvent>([&](NkMouseRawEvent *e) {
 		accVide += e->GetDeltaX();       // a chaque evenement : on AJOUTE
 		accSansVide += e->GetDeltaX();
+		++nbEvenements;
 	});
 
 	const float SENSIBILITE = 0.002f; // radians par compte du capteur
@@ -226,6 +232,13 @@ int nkmain(const NkEntryState &state) {
 		// 2) Version juste : on LIT l'accumulation une fois par image, PUIS on la VIDE (dans cet ordre).
 		lacetVide += (float)accVide * SENSIBILITE;
 		accVide = 0;
+		if (nbEvenements > 0) {
+			totalEvenements += nbEvenements;
+			++imagesAvecEvenements;
+			if (nbEvenements > maxParImage)
+				maxParImage = nbEvenements;
+		}
+		nbEvenements = 0;
 
 		// 3) La juste sans son vidage : meme lecture, mais l'accumulateur n'est jamais remis a zero.
 		lacetSansVidage += (float)accSansVide * SENSIBILITE;
@@ -275,6 +288,17 @@ int nkmain(const NkEntryState &state) {
 
 	if (fichier)
 		std::fclose(fichier);
+	{
+		FILE *f = std::fopen("evenements.txt", "w");
+		const double moyenne = imagesAvecEvenements > 0 ? (double)totalEvenements / (double)imagesAvecEvenements : 0.0;
+		std::printf("evenements : %lld sur %lld images avec evenements, moyenne %.1f par image, maximum %d\n",
+		            totalEvenements, imagesAvecEvenements, moyenne, maxParImage);
+		if (f) {
+			std::fprintf(f, "evenements : %lld sur %lld images avec evenements, moyenne %.1f par image, maximum %d\n",
+			             totalEvenements, imagesAvecEvenements, moyenne, maxParImage);
+			std::fclose(f);
+		}
+	}
 	device->WaitIdle();
 	NkRenderer::Destroy(renderer);
 	NkDeviceFactory::Destroy(device);

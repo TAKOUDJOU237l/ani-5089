@@ -164,6 +164,20 @@ static void CalculerOrdres() {
 			std::fprintf(f, "%s : (%.4f, %.4f, %.4f)\n", noms[i], v[i]->x + 0.0f, v[i]->y + 0.0f, v[i]->z + 0.0f);
 	}
 	std::printf("calcul a la main : y = sin(30 deg) = %.4f\n", yMain);
+
+	// 4) La formule n'est plus seulement deduite : on la mesure. La hauteur du regard (sa composante y)
+	//    est calculee par le moteur dans les deux ordres, a cinq lacets, puis comparee a la formule
+	//    0,5 x cos(lacet) de l'ordre fautif tangage*lacet. Ces lignes ne vont qu'a l'ecran :
+	//    regards.txt garde ses trois lignes.
+	const float lacets[5] = {0.f, 45.f, 90.f, 135.f, 180.f};
+	for (int i = 0; i < 5; ++i) {
+		const NkQuatf qL = NkQuatf::RotateY(NkAngle(lacets[i]));
+		const float yBon = ((qL * qTangage) * avant).y;
+		const float yFautif = ((qTangage * qL) * avant).y;
+		const float yFormule = 0.5f * std::cos(lacets[i] * PI_SALLE / 180.f);
+		std::printf("lacet %3.0f : y lacet*tangage = %.4f, y tangage*lacet = %.4f, formule 0.5*cos(lacet) = %.4f, ecart %.4f\n",
+		            lacets[i], yBon + 0.0f, yFautif + 0.0f, yFormule + 0.0f, std::fabs(yFautif - yFormule));
+	}
 	if (f)
 		std::fclose(f);
 }
