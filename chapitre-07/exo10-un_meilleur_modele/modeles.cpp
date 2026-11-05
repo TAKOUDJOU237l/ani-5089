@@ -8,6 +8,8 @@
 //  Quatre enregistrements : un geste lent, le quart de tour en 400 ms, un demi-tour brusque, et un arret brusque
 //  (la tete tourne a vitesse constante, puis s'arrete net). Erreur moyenne et plus grande, en degres, pendant le
 //  geste et les 200 ms qui suivent.
+//  Pour l'arret, le regime est deja etabli quand la mesure commence : la tete tourne a vitesse constante depuis
+//  avant t = 0, et les poses d'avant t = 0 sont sur la meme droite (pas de depart depuis le repos).
 //
 //  Une ligne par enregistrement :
 //      rapide (90 deg en 400 ms) : vitesse V deg (max X), acceleration A deg (max Y)
@@ -208,8 +210,10 @@ namespace {
 	// Le lacet (en degres) de l'enregistrement a l'instant t.
 	double LacetDe(const Enregistrement &e, double t) {
 		if (e.arretNet) {
+			// Regime DEJA ETABLI : la tete tourne a vitesse constante depuis avant t = 0, donc les poses d'avant le
+			// debut de la mesure (t < 0) sont sur la meme droite. Sinon la premiere pose mesuree est un depart
+			// depuis le repos, que ni l'un ni l'autre modele ne peut prevoir, et il fausse le maximum.
 			const double duree = e.dureeMs * 1e-3;
-			if (t <= 0.0) return 0.0;
 			return e.amplitudeDeg * (t < duree ? t : duree);     // vitesse constante, puis plus rien
 		}
 		return Lacet(t, e.amplitudeDeg, e.dureeMs * 1e-3);

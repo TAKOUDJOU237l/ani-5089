@@ -11,6 +11,8 @@
 //  3. Le verrou : a la fin de chaque image, on attend que DEUX periodes se soient ecoulees depuis son
 //     debut. Pour attendre : NkChrono::SleepMilliseconds, sur une minuterie FINE (BeginPreciseTiming),
 //     puis une attente active sur l'horloge pour les derniers instants. Voir AttendreJusqua.
+//     Le verrou n'a d'effet que si l'image dure entre UNE et DEUX periodes : au-dela de deux periodes,
+//     il n'attend jamais. MASALLE_LARGEUR et MASALLE_HAUTEUR (fenetre plus petite) servent a y amener la salle.
 //  4. Mesures : 1000 intervalles entre deux DEBUTS d'image sans verrou, puis 1000 avec, la salle
 //     alourdie dans les deux cas (les 30 premieres images de chaque phase sont ecartees).
 //
@@ -247,8 +249,10 @@ int nkmain(const NkEntryState &state) {
 
 	NkWindowConfig cfg;
 	cfg.title = "Ma salle";
-	cfg.width = 1280;
-	cfg.height = 720;
+	// MASALLE_LARGEUR / MASALLE_HAUTEUR : la taille de la fenetre (1280 x 720 par defaut). Une fenetre plus petite
+	// allege le dessin : c'est un reglage pour amener le temps d'image entre une et deux periodes de l'ecran.
+	cfg.width = (uint32)EnvU64("MASALLE_LARGEUR", 1280);
+	cfg.height = (uint32)EnvU64("MASALLE_HAUTEUR", 720);
 	cfg.centered = true;
 	cfg.vsync = true;
 
