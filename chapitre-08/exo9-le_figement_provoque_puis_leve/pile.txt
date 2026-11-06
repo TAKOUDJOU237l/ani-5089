@@ -1,0 +1,10 @@
+Pas de pile : le programme ne s'est pas fige.
+
+Sans le second appel (SetRenderSizeOverride), la cible de 640 x 360, puis de 64 x 36,
+puis de 640 x 703, pour une fenetre de 1274 x 703, a dessine 600 images chaque fois,
+sans arret ni blocage. Il n'y avait donc pas de fil principal bloque auquel attacher
+un debogueur, et je n'ai pas copie de pile.
+
+Deux lancements du mode sans taille se sont arretes apres 60 images avec le message
+"CreateSwapchain VkResult=-1" (le programme s'est ferme, il n'est pas reste fige).
+Ce n'est pas un figement silencieux, et je n'ai pas pris de pile sur ce cas.
