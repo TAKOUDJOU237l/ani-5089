@@ -1,6 +1,72 @@
+fenetre redimensionnee : 1920 x 974
 detruit la chaine gauche
-detruit la chaine droite
+detruit la chaine droit
+detruit la cible gauche
+detruit la cible droit
+redimensionne le renderer d'ecran
+recree la cible gauche en 960 x 974
+recree la cible droit en 960 x 974
 recree la chaine gauche
-recree la chaine droite
+recree la chaine droit
 reenregistre les images de la chaine gauche
-reenregistre les images de la chaine droite
+reenregistre les images de la chaine droit
+fenetre redimensionnee : 1274 x 703
+detruit la chaine gauche
+detruit la chaine droit
+detruit la cible gauche
+detruit la cible droit
+redimensionne le renderer d'ecran
+recree la cible gauche en 637 x 703
+recree la cible droit en 637 x 703
+recree la chaine gauche
+recree la chaine droit
+reenregistre les images de la chaine gauche
+reenregistre les images de la chaine droit
+fenetre redimensionnee : 1920 x 974
+detruit la chaine gauche
+detruit la chaine droit
+detruit la cible gauche
+detruit la cible droit
+redimensionne le renderer d'ecran
+recree la cible gauche en 960 x 974
+recree la cible droit en 960 x 974
+recree la chaine gauche
+recree la chaine droit
+reenregistre les images de la chaine gauche
+reenregistre les images de la chaine droit
+fenetre redimensionnee : 1274 x 703
+detruit la chaine gauche
+detruit la chaine droit
+detruit la cible gauche
+detruit la cible droit
+redimensionne le renderer d'ecran
+recree la cible gauche en 637 x 703
+recree la cible droit en 637 x 703
+recree la chaine gauche
+recree la chaine droit
+reenregistre les images de la chaine gauche
+reenregistre les images de la chaine droit
+fenetre redimensionnee : 1920 x 974
+detruit la chaine gauche
+detruit la chaine droit
+detruit la cible gauche
+detruit la cible droit
+redimensionne le renderer d'ecran
+recree la cible gauche en 960 x 974
+recree la cible droit en 960 x 974
+recree la chaine gauche
+recree la chaine droit
+reenregistre les images de la chaine gauche
+reenregistre les images de la chaine droit
+fenetre redimensionnee : 1274 x 703
+detruit la chaine gauche
+detruit la chaine droit
+detruit la cible gauche
+detruit la cible droit
+redimensionne le renderer d'ecran
+recree la cible gauche en 637 x 703
+recree la cible droit en 637 x 703
+recree la chaine gauche
+recree la chaine droit
+reenregistre les images de la chaine gauche
+reenregistre les images de la chaine droit
