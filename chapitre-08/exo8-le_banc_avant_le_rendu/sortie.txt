@@ -1,0 +1,9 @@
+tour 1 : emprunte 0 (ok), rendu (ok), a soumettre 0
+tour 2 : emprunte 1 (ok), rendu (ok), a soumettre 1
+tour 3 : emprunte 2 (ok), rendu (ok), a soumettre 2
+tour 4 : emprunte 0 (ok), rendu (ok), a soumettre 0
+tour 5 : emprunte 1 (ok), rendu (ok), a soumettre 1
+tour 6 : emprunte 2 (ok), rendu (ok), a soumettre 2
+refus 1, emprunter deux fois : refuse
+refus 2, rendre sans avoir emprunte : refuse
+refus 3, chaine de 5 images (maximum 4) : refusee
