@@ -22,8 +22,10 @@
 //      trace.txt  : "image : N, gauche : i, droit : j" pour les 30 premieres
 //                   images, puis pour les 10 images qui suivent un redimensionnement.
 //      resize.txt : ce qui a ete detruit / recree / reenregistre.
-//  Variables : DC_IMAGES (images avant arret, 1200 par defaut, ~20 s), DC_DEUX_SANS_REENREGISTRER=1
-//  pour omettre le reenregistrement (observer l'oeil noir).
+//  Variables : DC_IMAGES (images avant arret, 1200 par defaut, ~20 s),
+//  DC_DEUX_SANS_REENREGISTRER=1 pour omettre le reenregistrement,
+//  DC_SANS_RECREER=1 pour garder les anciennes chaines et leurs poignees,
+//  DC_SUFFIXE=-essai pour ecrire trace-essai.txt et resize-essai.txt.
 // =============================================================================
 #include "NKWindow/NKMain.h"
 #include "NKWindow/Core/NkWindow.h"
@@ -334,8 +336,18 @@ int nkmain(const NkEntryState &state) {
 		Reenregistrer(o);
 	}
 
-	std::FILE *trace = std::fopen("trace.txt", "w");
-	std::FILE *resize = std::fopen("resize.txt", "w");
+	// DC_SUFFIXE : pour ne pas ecraser trace.txt / resize.txt pendant un essai.
+	const char *suffixe = getenv("DC_SUFFIXE");
+	if (suffixe == nullptr) suffixe = "";
+	char nomTrace[64], nomResize[64];
+	std::snprintf(nomTrace, sizeof(nomTrace), "trace%s.txt", suffixe);
+	std::snprintf(nomResize, sizeof(nomResize), "resize%s.txt", suffixe);
+	std::FILE *trace = std::fopen(nomTrace, "w");
+	std::FILE *resize = std::fopen(nomResize, "w");
+	// DC_SANS_RECREER=1 : au redimensionnement, on refait les cibles et on les
+	// rebranche aux renderers, mais on GARDE les anciennes chaines et leurs
+	// anciennes poignees (rien n'est detruit, rien n'est reenregistre).
+	const bool sansRecreer = EnvU64("DC_SANS_RECREER", 0) != 0;
 	const bool sansReenregistrer = EnvU64("DC_DEUX_SANS_REENREGISTRER", 0) != 0;
 	const uint64 imageDeSortie = EnvU64("DC_IMAGES", 1200);
 
@@ -373,8 +385,16 @@ int nkmain(const NkEntryState &state) {
 			char ligne[160];
 			std::snprintf(ligne, sizeof(ligne), "fenetre redimensionnee : %u x %u", winW, winH);
 			op(ligne);
-			for (int k = 0; k < 2; ++k) { yeux[k].chaine.Detruire(); std::snprintf(ligne, sizeof(ligne), "detruit la chaine %s", yeux[k].nom); op(ligne); }
-			for (int k = 0; k < 2; ++k) { rEcran->DestroyOffscreen(yeux[k].cible); std::snprintf(ligne, sizeof(ligne), "detruit la cible %s", yeux[k].nom); op(ligne); }
+			for (int k = 0; k < 2; ++k) {
+				if (sansRecreer) { std::snprintf(ligne, sizeof(ligne), "GARDE la chaine %s et ses anciennes poignees (DC_SANS_RECREER=1)", yeux[k].nom); }
+				else { yeux[k].chaine.Detruire(); std::snprintf(ligne, sizeof(ligne), "detruit la chaine %s", yeux[k].nom); }
+				op(ligne);
+			}
+			for (int k = 0; k < 2; ++k) {
+				if (sansRecreer) { std::snprintf(ligne, sizeof(ligne), "GARDE l'ancienne cible %s, non detruite (DC_SANS_RECREER=1)", yeux[k].nom); }
+				else { rEcran->DestroyOffscreen(yeux[k].cible); std::snprintf(ligne, sizeof(ligne), "detruit la cible %s", yeux[k].nom); }
+				op(ligne);
+			}
 			rEcran->OnResize(winW, winH);
 			op("redimensionne le renderer d'ecran");
 			for (int k = 0; k < 2; ++k) {
@@ -384,8 +404,12 @@ int nkmain(const NkEntryState &state) {
 				std::snprintf(ligne, sizeof(ligne), "recree la cible %s en %u x %u", yeux[k].nom, cibleW, cibleH); op(ligne);
 			}
 			if (!tourne) break;
-			for (int k = 0; k < 2; ++k) { yeux[k].chaine.Creer(kImagesParChaine); std::snprintf(ligne, sizeof(ligne), "recree la chaine %s", yeux[k].nom); op(ligne); }
-			if (!sansReenregistrer) {
+			if (!sansRecreer) {
+				for (int k = 0; k < 2; ++k) { yeux[k].chaine.Creer(kImagesParChaine); std::snprintf(ligne, sizeof(ligne), "recree la chaine %s", yeux[k].nom); op(ligne); }
+			}
+			if (sansRecreer) {
+				op("chaines non recreees, images non reenregistrees (DC_SANS_RECREER=1)");
+			} else if (!sansReenregistrer) {
 				for (int k = 0; k < 2; ++k) { Reenregistrer(yeux[k]); std::snprintf(ligne, sizeof(ligne), "reenregistre les images de la chaine %s", yeux[k].nom); op(ligne); }
 			} else {
 				op("reenregistrement OMIS (DC_DEUX_SANS_REENREGISTRER=1)");
