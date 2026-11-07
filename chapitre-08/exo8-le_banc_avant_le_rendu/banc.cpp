@@ -2,6 +2,21 @@
 #include <cstdio>
 #include "chaine.h"
 
+// Pour comparaison seulement : ce que serait une chaine PERMISSIVE, qui ne
+// refuse jamais un emprunt. Elle compte les emprunts faits sur une image
+// qui est deja sortie.
+struct ChainePermissive {
+    uint32_t suivant = 0u;
+    bool sortie = false;
+    int surImageDejaSortie = 0;
+    bool AcquireImage(uint32_t &index) {
+        if (sortie) ++surImageDejaSortie;
+        sortie = true;
+        index = suivant;
+        return true;
+    }
+};
+
 int main() {
     ChaineEchange chaine;
     if (!chaine.Creer(3u)) {
@@ -32,6 +47,21 @@ int main() {
     std::printf("refus 3, chaine de %u images (maximum %u) : %s\n",
                 ChaineEchange::kMaxImages + 1u, ChaineEchange::kMaxImages,
                 tropGrande ? "ACCEPTEE (faute)" : "refusee");
+
+    // Le meme programme fautif (six emprunts d'affilee, sans jamais rendre),
+    // devant la chaine stricte puis devant la chaine permissive.
+    ChaineEchange stricte;
+    stricte.Creer(3u);
+    ChainePermissive permissive;
+    int accepteStricte = 0, refuseStricte = 0, acceptePermissive = 0;
+    for (int tour = 1; tour <= 6; ++tour) {
+        uint32_t i = 0u;
+        if (stricte.AcquireImage(i)) ++accepteStricte; else ++refuseStricte;
+        if (permissive.AcquireImage(i)) ++acceptePermissive;
+    }
+    std::printf("comparaison, six emprunts d'affilee sans rendre : chaine stricte %d acceptes %d refuses ; "
+                "chaine permissive %d acceptes dont %d sur une image deja sortie\n",
+                accepteStricte, refuseStricte, acceptePermissive, permissive.surImageDejaSortie);
 
     return (doubleEmprunt || renduSansEmprunt || tropGrande) ? 1 : 0;
 }

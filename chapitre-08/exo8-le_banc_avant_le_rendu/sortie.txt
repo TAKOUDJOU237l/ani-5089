@@ -7,3 +7,4 @@ tour 6 : emprunte 2 (ok), rendu (ok), a soumettre 2
 refus 1, emprunter deux fois : refuse
 refus 2, rendre sans avoir emprunte : refuse
 refus 3, chaine de 5 images (maximum 4) : refusee
+comparaison, six emprunts d'affilee sans rendre : chaine stricte 1 acceptes 5 refuses ; chaine permissive 6 acceptes dont 5 sur une image deja sortie
