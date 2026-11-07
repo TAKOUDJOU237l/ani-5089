@@ -14,6 +14,7 @@
 //
 //    CIBLE_LARGEUR / CIBLE_HAUTEUR : taille de la cible (640 x 360 par defaut).
 //    CIBLE_IMAGES                  : nombre d'images a dessiner (12 par defaut).
+//    CIBLE_FENETRE_LARGEUR / CIBLE_FENETRE_HAUTEUR : taille de la fenetre (1280 x 720 par defaut).
 // =============================================================================
 //  Étape 5 — la salle, en cubes, aux dimensions du chapitre 2.
 //
@@ -174,8 +175,8 @@ int nkmain(const NkEntryState &state) {
 
 	NkWindowConfig cfg;
 	cfg.title = "Ma salle";
-	cfg.width = 1280;
-	cfg.height = 720;
+	cfg.width = (uint32)EnvU64("CIBLE_FENETRE_LARGEUR", 1280);
+	cfg.height = (uint32)EnvU64("CIBLE_FENETRE_HAUTEUR", 720);
 	cfg.centered = true;
 	cfg.vsync = true;
 

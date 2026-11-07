@@ -1,0 +1,25 @@
+Ce que j'ai fait varier (cible plus petite que la fenetre, mode SANS le second appel
+sauf indication contraire). Une mesure par ligne, le nombre d'images est lu dans le
+fichier ecrit par le programme, toutes les 10 s pendant 60 s au plus.
+
+--- Premier balayage, mode sans taille forcee ---
+fenetre demandee 1280 x 720, cible 640 x 360 : LENT : encore en cours apres 60 s (mesures toutes les 10 s : 76, 181, 279, 385, 490, 600)
+fenetre demandee 1280 x 720, cible 64 x 36 : FINI : 600 images
+fenetre demandee 1280 x 720, cible 16 x 9 : FINI : 600 images
+fenetre demandee 1280 x 720, cible 1 x 1 : FINI : 600 images
+fenetre demandee 1900 x 950, cible 640 x 360 : LENT : encore en cours apres 60 s (mesures toutes les 10 s : 38, 89, 140, 162, 179, 196)
+fenetre demandee 1900 x 950, cible 64 x 36 : LENT : encore en cours apres 60 s (mesures toutes les 10 s : 19, 73, 128, 184, 236, 290)
+fenetre demandee 1900 x 950, cible 16 x 9 : LENT : encore en cours apres 60 s (mesures toutes les 10 s : 35, 87, 138, 190, 233, 252)
+fenetre demandee 1900 x 950, cible 1 x 1 : LENT : encore en cours apres 60 s (mesures toutes les 10 s : 41, 97, 153, 206, 262, 317)
+
+--- Comparaison dans les memes conditions : SANS le second appel ---
+mode sans, fenetre 1900 x 950, cible 640 x 360 : encore en cours apres 60 s : 372 images (mesures toutes les 10 s : 42, 114, 180, 244, 306, 372)
+mode sans, fenetre 1900 x 950, cible 64 x 36 : encore en cours apres 60 s : 385 images (mesures toutes les 10 s : 51, 118, 184, 250, 317, 385)
+mode sans, fenetre 1900 x 950, cible 1 x 1 : encore en cours apres 60 s : 348 images (mesures toutes les 10 s : 46, 108, 166, 223, 286, 348)
+mode sans, fenetre 1280 x 720, cible 640 x 360 : encore en cours apres 60 s : 591 images (mesures toutes les 10 s : 88, 201, 300, 390, 492, 591)
+
+--- Comparaison dans les memes conditions : AVEC le second appel ---
+mode avec, fenetre 1900 x 950, cible 640 x 360 : FINI : 600 images (mesures toutes les 10 s : 173, 442)
+mode avec, fenetre 1900 x 950, cible 64 x 36 : FINI : 600 images (mesures toutes les 10 s : 398)
+mode avec, fenetre 1900 x 950, cible 1 x 1 : encore en cours apres 60 s : 306 images (mesures toutes les 10 s : 41, 96, 147, 202, 254, 306)
+mode avec, fenetre 1280 x 720, cible 640 x 360 : FINI : 600 images (mesures toutes les 10 s : 249, 593)
