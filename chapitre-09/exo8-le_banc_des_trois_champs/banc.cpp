@@ -13,7 +13,7 @@ int main() {
     const bool touchT[6] = { false, false, true, false, false, true };
     const bool touchM[6] = { false, false, true, false, false, false };
 
-    std::printf("image | saisir c ch a | tirer c ch a | morte c ch a\n");
+    std::printf("image | saisir: courant change actif | tirer: courant change actif | morte: courant change actif\n");
     for (int i = 0; i < 6; ++i) {
         saisir.Synchroniser(touchG[i]);
         tirer.Synchroniser(touchT[i]);
@@ -21,7 +21,7 @@ int main() {
         const EtatAction &s = saisir.Etat();
         const EtatAction &t = tirer.Etat();
         const EtatAction &m = morte.Etat();
-        std::printf("%5d | %12d %d %d | %11d %d %d | %11d %d %d\n", i + 1,
+        std::printf("%5d | %14d %6d %5d | %14d %6d %5d | %14d %6d %5d\n", i + 1,
                     s.courant, s.change, s.actif, t.courant, t.change, t.actif,
                     m.courant, m.change, m.actif);
     }

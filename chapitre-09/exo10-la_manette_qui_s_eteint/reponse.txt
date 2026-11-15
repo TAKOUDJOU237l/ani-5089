@@ -1,32 +1,6 @@
-Exercice 10 - la manette qui s'eteint
 
-SIMULATION. Le kit (dossier R3D) n'a pas de module d'actions XR (voir exercice 9) : la
-manette est un script. Le doigt reste pose des l'image 3 sans jamais se relever, mais la
-source est eteinte (actif = 0) aux images 8 a 17. Je n'ai pas teste sur un casque.
+Ce que le programme a cru : jusqu'a l'image 7 tout allait bien, le doigt etait pose, courant valait 1 et l'objet suivait la paume. A l'image 8 le journal affiche courant 0, change 1, actif 0 : le programme a lu "courant est passe de 1 a 0", c'est-a-dire "le joueur vient de lacher la gachette", et il a lache l'objet (avant.png : a l'image 17 il est retombe sur la table, alors que la main est loin, pres de la porte). Il n'a pas teste actif, donc il n'avait aucun moyen de savoir autre chose. Cette extinction est simulee : le kit fourni ne contient pas de module d'actions XR, la manette est un script et la source est eteinte aux images 8 a 17.
 
-Ce que j'ai observe (journal.txt et journal-apres.txt, 20 images) :
-- images 3 a 7 : courant 1, actif 1 (change 1 a l'image 3 seulement) ;
-- image 8 : courant 0, change 1, actif 0 ;
-- images 9 a 17 : courant 0, change 0, actif 0 ;
-- image 18 : courant 1, change 1, actif 1 ; images 19 et 20 : courant 1, change 0.
-Les deux journaux sont identiques : la panne ne depend pas de la regle de decision, seule
-la reaction change.
+Ce qui se passait vraiment : le doigt n'avait pas bouge, il est reste pose de l'image 3 a la fin. C'est la manette qui s'est eteinte (actif passe a 0 a l'image 8, revient a 1 a l'image 18). Quand actif est faux, courant est force a faux : un relachement reel et une manette eteinte produisent donc la meme ligne pour courant et change (courant 0, change 1), et rien dans ces deux champs ne distingue les deux cas. Seul actif les separe : 1 pour un vrai relachement, 0 pour une extinction. Le journal.txt le montre : actif vaut 0 de l'image 8 a l'image 17, puis revient a 1 a l'image 18, ou courant repasse a 1 avec change 1 (ce n'est pas une nouvelle saisie, l'objet est deja tenu).
 
-Les captures, a l'image 17 :
-- avant.png (on lache des que courant est faux, sans tester actif) : l'objet vert est
-  retombe sur la table, la main rouge est tres haut pres de la porte. Il a ete lache a
-  l'image 8, alors que le doigt n'avait pas bouge.
-- apres.png (on lache seulement si actif est vrai ET courant passe a faux) : l'objet est
-  reste dans la main, pres de la porte, avec elle.
-
-Pourquoi. A l'image 8, courant passe a 0 avec change a 1 : c'est EXACTEMENT ce que donne un
-vrai relachement du doigt. Seul actif les distingue (0 ici, 1 pour un vrai relachement) :
-quand actif est faux, courant est force a faux, donc "courant faux" ne dit rien du doigt.
-La regle corrigee :  lacher seulement si actif && !courant && change.
-Aux images 9 a 17, actif reste 0 : on ne lache rien, on garde la derniere pose connue.
-A l'image 18, courant revient a 1 avec change a 1 : ce n'est pas une nouvelle saisie, l'objet
-est deja tenu (tenu est vrai), la garde "!tenu" l'empeche de le ressaisir.
-
-Limite. L'extinction dure dix images dans mon script ; sur materiel reel, sa duree et son
-moment ne sont pas maitrisables, et la pose de la main peut elle aussi etre perdue pendant la
-panne (ici elle continue d'avancer, ce qui est une hypothese).
+Ce que je teste maintenant : l'objet n'est lache que si actif est vrai ET courant est faux ET change est vrai, c'est-a-dire un vrai front de relachement avec une source presente. Sur le meme scenario, a la meme image 17, apres.png montre l'objet toujours dans la main, pres de la porte. Pendant l'extinction je garde l'objet attache a la derniere pose connue de la paume, je ne le lache pas ; j'ai choisi cela parce que le doigt n'a pas bouge et qu'une extinction automatique n'est pas une decision du joueur. Ce n'est pas la bonne reponse partout : pour un outil dangereux ou un objet lourd, mieux vaudrait le lacher ou le poser apres un delai, et c'est une hypothese que je n'ai pas testee. Autre hypothese : ici la pose de la main continue d'avancer pendant la panne, ce qu'un vrai controleur eteint ne fait pas forcement.

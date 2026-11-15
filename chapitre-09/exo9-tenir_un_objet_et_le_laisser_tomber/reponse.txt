@@ -1,29 +1,5 @@
+Ce qui se passe sur le front : le front est vrai UNE seule image, celle de la saisie (image 40 : courant 1 et change 1). A l'image suivante courant est toujours 1 mais change est redevenu 0. Si je ne tiens l'objet que quand le front est vrai, il est attache a la paume a l'image 40 et lache a l'image 41 : il m'echappe aussitot. front.png (image 55) le montre : le cube vert est reste sur la table et la main rouge est loin au-dessus. Le cube etait pose sur la table quand je l'ai lache, donc il ne tombe que de quelques centimetres et la chute n'est presque pas visible ; c'est une limite de ma scene. Cette saisie est simulee : le kit R3D n'a pas de module d'actions XR, la gachette est un script (appuyee des l'image 40) et la paume une trajectoire calculee.
 
+Ce qui se passe sur le niveau : le niveau (courant) reste vrai tant que le doigt est pose, de l'image 40 a l'image 100. L'objet est attache une seule fois, a la saisie (attache = inverse de la pose de paume multipliee par la pose de l'objet), puis recalcule a chaque image (objet = pose de paume multipliee par attache). Sur niveau.png, a la meme image 55, le cube vert est dans la main, au-dessus de la table. L'attache est faite sur la pose de PAUME, pas sur la pose de visee : sur la visee le cube flotterait a quelques centimetres de la main.
 
-SIMULATION. Le kit fourni (dossier R3D) ne contient aucun module d'actions XR : j'y ai
-cherche XrAction, SyncActions, GRIP_POSE, AIM_POSE, ActionSet, sans rien trouver ; le seul
-systeme d'entrees est NkInputMap, un systeme de bureau (clavier, manette, gestes) sans
-poses ni etat "actif". La gachette est donc un script (appuyee des l'image 40 jusqu'a
-l'image 100) et la paume une trajectoire calculee. Les trois champs courant, change et
-actif sont recalcules comme le chapitre les definit. Le rendu, la camera et la capture sont
-ceux du moteur. Je n'ai pas teste sur un casque.
-
-Ce que j'ai observe. Meme scenario, deux regles de decision, captures a la meme image (55) :
-
-- niveau.png (regle juste : l'objet est tenu tant que courant est vrai) : l'objet vert est
-  au-dessus de la table, la main rouge posee dessus. Il a suivi la paume pendant les
-  quinze images ecoulees depuis la saisie.
-- front.png (regle fautive : l'objet n'est tenu que pendant l'image du front, ou change est
-  vrai) : l'objet vert est reste sur la table, la main rouge est loin au-dessus et a gauche.
-  Il a ete lache a l'image suivant la saisie.
-
-La cause. A la saisie, courant et change sont vrais ensemble UNE seule image (image 40).
-Ensuite courant reste vrai tant que le doigt est pose, mais change repasse a faux. Tester
-change pour "tenir" revient donc a ne tenir qu'une image. Le front sert a DECLENCHER la
-saisie (courant et change vrais) ; le niveau sert a la MAINTENIR (courant vrai).
-
-Detail du calcul. L'objet est attache a la paume (pose de paume, pas de visee), une seule
-fois, a la saisie : attache = inverse(paume) * objet. Puis a chaque image : objet = paume * attache.
-
-Limite. Les numeros d'images et les positions viennent de mon script, pas d'une main
-reelle ; ils montrent la logique, pas le comportement d'un vrai controleur.
+Ce que je teste pour lacher : je lache quand courant est faux, c'est-a-dire : si (objet tenu et non courant) alors lacher. Je ne teste pas change pour lacher : change est vrai a l'image de la saisie aussi, et c'est justement la version fautive, qui ne tient qu'une image. Je ne teste pas non plus la valeur precedente de courant : change la contient deja. Une limite que je connais : quand actif est faux, courant est force a faux, donc ce test lacherait l'objet si la manette s'eteint ; l'exercice 10 le corrige en ajoutant actif et change au test.
