@@ -9,7 +9,7 @@
 //
 //    (rien)          : version JUSTE   - tenu tant que courant est vrai
 //    SAISIE_FAUTIF=1 : version FAUTIVE - tenu seulement sur le front (change)
-//  Capture a l'image 55 : niveau.png (juste) ou front.png (fautive).
+//  Capture a l'image 46 : niveau.png (juste) ou front.png (fautive).
 // =============================================================================
 #include "NKWindow/NKMain.h"
 #include "NKWindow/Core/NkWindow.h"
@@ -263,12 +263,14 @@ struct Monde {
 		// VERSION FAUTIVE (a garder en commentaire pour la lecture) : l'objet
 		// n'est tenu que le temps du front, donc il tombe a l'image suivante.
 		//     if (objet.tenu && !front) objet.Lacher();
-		// VERSION JUSTE : il est tenu tant que le niveau est vrai.
-		//     if (objet.tenu && !e.courant) objet.Lacher();
+		// VERSION JUSTE : il est tenu tant que le niveau est vrai, et on ne lache
+		// que sur un VRAI front de relachement : source presente (actif), niveau
+		// retombe (!courant) et bascule a cette image (change).
+		//     if (objet.tenu && e.actif && !e.courant && e.change) objet.Lacher();
 		if (fautif) {
 			if (objet.tenu && !front) objet.Lacher();
 		} else {
-			if (objet.tenu && !e.courant) objet.Lacher();
+			if (objet.tenu && e.actif && !e.courant && e.change) objet.Lacher();
 		}
 		objet.Avancer(paume);
 	}
@@ -387,7 +389,7 @@ int nkmain(const NkEntryState &state) {
 						 (unsigned long long)image, e.courant ? 1 : 0, e.change ? 1 : 0, e.actif ? 1 : 0);
 			std::fflush(journal);
 		}
-		if (image == 55) {
+		if (image == 46) {
 			const bool ok = cible->Capture((fautif ? "front.png" : "niveau.png"));
 			std::printf("[Sim] capture image %llu -> %s (%s)\n", (unsigned long long)image, (fautif ? "front.png" : "niveau.png"), ok ? "ok" : "echec");
 		}
