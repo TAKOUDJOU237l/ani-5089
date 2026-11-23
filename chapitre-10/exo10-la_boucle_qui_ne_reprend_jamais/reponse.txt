@@ -2,4 +2,12 @@ Ou la boucle s'est arretee : a la trame 8. Le casque est pose, shouldRender vaut
 
 Pourquoi aucun message n'est apparu : aucun appel n'a echoue au moment de la faute. A la trame 8, l'attente et le debut ont reussi, le rendu a ete saute normalement, et sauter une fin de trame n'est pas une erreur que le programme voit : il ne sait pas qu'il l'a oubliee. Le defaut n'apparait qu'a l'attente suivante, une trame plus tard, et sur un vrai casque cette attente ne revient pas : le programme est bloque, donc il ne peut pas lui-meme ecrire un message. Il ne se plaint pas, il ne tourne plus. De l'exterieur, un ecran fige ressemble a une pause, et la cause (une fin de trame sautee a la trame 8) est loin du symptome (aucune reprise, bien apres). Dans mon banc, le simulateur est plus severe que le materiel : il affiche l'attente refusee dans la console, ce que le vrai systeme ne fait pas.
 
-Ce que je fais maintenant a chaque trame : je termine toute trame commencee, hors du test de rendu, a chaque tour de boucle, y compris quand je n'ai rien dessine : la fin de trame est soumise avec zero couche. Dans journal-apres.txt, fin vaut 1 a toutes les trames : aux trames 8 a 12 on voit rend : 0, debut : 1, fin : 1, et a la trame 13 la boucle reprend (rend : 1). Sur apres.png (trame 16) le cube a avance : l'image est a jour. La regle que je garde, c'est qu'un debut de trame appelle toujours une fin, sans condition, et je verifie dans le journal que la colonne des fins ne se vide jamais.
+Ce que je fais maintenant a chaque trame : je termine toute trame commencee, hors du test de rendu, a chaque tour de boucle, y compris quand je n'ai rien dessine : la fin de trame est soumise avec zero couche. Dans journal-apres.txt (version corrigee, que je mets aussi dans le dossier), fin vaut 1 a toutes les trames. Les lignes utiles, avec la pause :
+trame : 7, rend : 1, debut : 1, fin : 1
+trame : 8, rend : 0, debut : 1, fin : 1
+trame : 9, rend : 0, debut : 1, fin : 1
+trame : 10, rend : 0, debut : 1, fin : 1
+trame : 11, rend : 0, debut : 1, fin : 1
+trame : 12, rend : 0, debut : 1, fin : 1
+trame : 13, rend : 1, debut : 1, fin : 1
+Aux trames 8 a 12 la trame est commencee et terminee sans rien dessiner, et a la trame 13 la boucle reprend (rend : 1), alors que dans journal.txt (version fautive) les trames 9 a 20 restent a debut : 0, fin : 0. Sur apres.png (trame 16) le cube a avance : l'image est a jour. La regle que je garde, c'est qu'un debut de trame appelle toujours une fin, sans condition, et je verifie dans le journal que la colonne des fins ne se vide jamais.
