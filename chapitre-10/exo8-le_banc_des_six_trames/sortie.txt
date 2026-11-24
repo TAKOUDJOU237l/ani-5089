@@ -1,3 +1,4 @@
+version corrigee (la fin de trame est hors du test de rendu)
 image | on rend | couches soumises | index d'image | fins de trame
     1 |       1 |                1 |             0 |             1
     2 |       1 |                1 |             1 |             2
@@ -5,3 +6,21 @@ image | on rend | couches soumises | index d'image | fins de trame
     4 |       0 |                0 |             - |             4
     5 |       1 |                1 |             2 |             5
     6 |       1 |                1 |             0 |             6
+
+version fautive (la fin de trame est dans le test de rendu)
+image | on rend | couches soumises | index d'image | fins de trame
+    1 |       1 |                1 |             0 |             1
+    2 |       1 |                1 |             1 |             2
+    3 |       0 |                0 |             - |             2
+    4 |       0 |                0 |             - |             2
+    5 |       0 |                0 |             - |             2
+    6 |       0 |                0 |             - |             2
+
+comparaison, trame par trame
+image | corrigee: on rend, index, fins de trame | fautive: on rend, index, fins de trame, attente
+    1 |                 1     0             1 |                1     0             1 ok
+    2 |                 1     1             2 |                1     1             2 ok
+    3 |                 0     -             3 |                0     -             2 ok
+    4 |                 0     -             4 |                0     -             2 REFUSEE
+    5 |                 1     2             5 |                0     -             2 REFUSEE
+    6 |                 1     0             6 |                0     -             2 REFUSEE
