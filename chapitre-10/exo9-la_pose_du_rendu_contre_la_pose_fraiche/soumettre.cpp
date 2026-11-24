@@ -282,11 +282,23 @@ int nkmain(const NkEntryState &state) {
 		// 2. La tete bouge PENDANT le rendu : a la soumission, elle n'est plus la.
 		const double lacetFrais = Lacet(temps);
 
-		// 3. La soumission. JUSTE : les vues employees au rendu, resoumises telles quelles.
+		// 3. La soumission.
+		//
+		// VERSION JUSTE (celle qui tourne par defaut) : on garde les vues employees
+		// au rendu et on les resoumet telles quelles. La couche porte la pose DU RENDU.
 		const double soumisJuste = lacetRendu;
-		// VERSION FAUTIVE (en commentaire pour la lecture) : redemander les vues
-		// juste avant de soumettre, pour l'instant courant.
-		//     const double soumisFautif = lacetFrais;
+		//
+		// VERSION FAUTIVE (en commentaire, pour la lire sans lancer le programme) :
+		// on redemande les vues juste avant de soumettre, pour l'instant courant.
+		// Elle est naturelle, elle marche sur un simulateur qui ne reprojette pas,
+		// et elle ne corrige rien :
+		//
+		//     const double lacetFrais2 = Lacet(temps);   // "la pose la plus vraie"
+		//     const double soumis = lacetFrais2;         // la couche porte la pose de MAINTENANT
+		//     // => correction du compositeur : reel - soumis = 0, l'erreur reste rendu - reel
+		//
+		// Pour l'obtenir a l'execution sans toucher au code, SOUMETTRE_FRAICHE=1
+		// execute exactement ces deux lignes, et ecrit fraiche.png au lieu de rendu.png.
 		const double soumis = fraiche ? lacetFrais : soumisJuste;
 
 		// 4. Ce que le compositeur affiche.
