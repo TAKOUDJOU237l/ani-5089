@@ -1,3 +1,20 @@
-Pourquoi la trame 5 reprend sur l'image 2 : l'anneau a trois images (0, 1, 2) et l'index ne bouge que quand on emprunte une image, c'est-a-dire quand on dessine. Aux trames 1 et 2 on a dessine : on a emprunte les images 0 et 1, et l'index est passe a 2. Aux trames 3 et 4 le casque est pose, on n'a rien dessine, donc rien emprunte, donc rien rendu, et l'index est reste a 2 (sortie.txt : "-" dans la colonne de l'index, zero couche soumise). A la trame 5 on dessine de nouveau : on prend l'image sur laquelle on s'etait arrete, la 2, et non la 4 que donnerait un index avance a chaque trame. Les trames sautees n'ont pas consomme d'image, c'est ce qui permet de s'arreter et de reprendre sans rien perdre ; la trame 6 prend ensuite l'image 0, apres retour au debut de l'anneau.
+Pourquoi la trame 5 reprend sur l'image 2 : parce que l'index n'avance que sur une trame rendue.
+L'anneau a trois images : 0, 1 et 2.
+Aux trames 1 et 2, on dessine. On emprunte les images 0 et 1, et l'index passe a 2.
+Aux trames 3 et 4, le casque est pose. On ne dessine rien, donc on n'emprunte rien.
+L'index reste a 2. Dans sortie.txt, la colonne de l'index montre "-" et zero couche est soumise.
+A la trame 5, on dessine de nouveau. On prend l'image 2, celle ou l'on s'etait arrete.
+Un index avance a chaque trame aurait donne 4 : c'est le piege.
+La trame 6 prend ensuite l'image 0, car l'anneau revient au debut.
 
-Pourquoi on finit une trame sans rien dessiner : le systeme compte les trames. Il attend une fin de trame pour chaque debut, et il regle son rythme dessus. Aux trames 3 et 4 on a attendu et commence la trame, donc il faut la terminer, meme avec zero couche : la colonne des fins de trame de sortie.txt monte de 1 a 6 sans jamais sauter, y compris aux trames 3 et 4. Si l'on met la fin dans le test de rendu, ces deux trames restent ouvertes, l'attente suivante se bloque, et le programme ne reprend jamais quand on remet le casque, sans aucun message d'erreur. Le banc ne tourne pas sur un vrai casque : c'est une simulation, et la regle du chapitre y est montree, pas un blocage observe sur un casque. Pour ne pas rester sur une affirmation, banc.cpp fait maintenant tourner les deux versions du meme scenario et imprime leurs sorties l'une a cote de l'autre (tableau "comparaison, trame par trame" de sortie.txt). Version corrigee : les fins de trame montent 1, 2, 3, 4, 5, 6 et l'index donne 0, 1, -, -, 2, 0. Version fautive (fin de trame dans le test de rendu) : les fins de trame s'arretent a 2 des la trame 3 ; a la trame 4 l'attente est refusee par la session simulee (REFUSEE), car la trame 3 est restee ouverte, et il en va de meme aux trames 5 et 6. Du coup on ne rend plus rien des la trame 5 : colonne "on rend" a 0, pas d'index, alors que la version corrigee prend l'image 2 a la trame 5. La session simulee qui refuse l'attente est mon modele du blocage, pas une mesure sur un vrai casque.
+Pourquoi on finit une trame sans rien dessiner : parce qu'une trame commencee doit toujours etre terminee.
+Le systeme attend une fin de trame pour chaque debut. Il regle son rythme dessus.
+Aux trames 3 et 4, on a attendu et commence la trame. Il faut donc la terminer, avec zero couche.
+Dans sortie.txt, la colonne des fins de trame monte de 1 a 6, sans jamais sauter.
+Si la fin est dans le test de rendu, les trames 3 et 4 restent ouvertes.
+L'attente suivante se bloque. Le programme ne reprend jamais, et aucun message n'apparait.
+Le banc le montre : il fait tourner les deux versions et les compare trame par trame.
+Version corrigee : les fins de trame font 1, 2, 3, 4, 5, 6. L'index donne 0, 1, -, -, 2, 0.
+Version fautive : les fins de trame restent a 2 des la trame 3.
+Aux trames 4, 5 et 6, l'attente est REFUSEE. On ne rend plus rien des la trame 5.
+Limite : ce banc est une simulation, pas un casque. La session qui refuse l'attente est mon modele du blocage, pas une mesure.
