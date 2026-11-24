@@ -1,5 +1,27 @@
-Ce que la couche dit vraiment : la couche de projection ne dit pas ou est la tete. Elle dit d'ou cette image a ete vue : elle reprend la pose et le champ de vision employes au rendu. Dans mon banc, la tete tourne pendant le rendu : a l'image 30, le rendu a ete fait avec un lacet de -6,0 degres, et au moment de soumettre la tete est a 0,0 degre, donc elle a bouge de 6 degres entre les deux. La version juste soumet -6,0, la pose du rendu. Cette simulation est a retenir : le moteur n'a pas de compositeur, j'ai calcule la reprojection moi-meme, et la tete tourne a 360 degres par seconde, une vitesse exageree pour que l'ecart se voie sur une image de 640 pixels.
+Ce que la couche dit vraiment : elle ne dit pas ou est la tete, elle dit d'ou l'image a ete vue.
+Elle reprend la pose et le champ de vision employes au rendu.
+Dans mon banc, la tete tourne pendant le rendu.
+A l'image 30, le rendu est fait avec un lacet de -6,0 degres.
+Au moment de soumettre, la tete est a 0,0 degre : elle a bouge de 6 degres.
+La version juste soumet -6,0, la pose du rendu.
+Attention, c'est une simulation : le moteur n'a pas de compositeur, j'ai calcule la reprojection moi-meme.
+La tete tourne a 360 degres par seconde, une vitesse exageree pour que l'ecart se voie sur une image de 640 pixels.
 
-Ce que le compositeur en fait : au moment d'afficher, il connait la vraie pose de la tete (0,0) et il sait avec quelle pose l'image a ete dessinee (celle que la couche porte). Il applique une correction de reel moins soumis, ici 0,0 - (-6,0) = +6,0 degres, et l'image parait vue depuis rendu + (reel - soumis) = 0,0 : l'erreur qui reste vaut rendu - soumis = 0. Sur rendu.png le poteau rouge est au centre de l'image, la scene est en place. Le simulateur ne reprojette pas, ce qui rend cette distinction invisible la ou elle compte : c'est pour cela que je l'ai calculee.
+Ce que le compositeur en fait : il corrige l'image avec la vraie pose de la tete et la pose du rendu.
+Au moment d'afficher, il connait la pose reelle (0,0).
+Il sait aussi avec quelle pose l'image a ete dessinee : celle que la couche porte.
+Sa correction vaut reel moins soumis, ici 0,0 - (-6,0) = +6,0 degres.
+L'image parait alors vue depuis rendu + (reel - soumis) = 0,0.
+L'erreur qui reste vaut rendu - soumis = 0.
+Sur rendu.png, le poteau rouge est au centre de l'image : la scene est en place.
+Le simulateur ne reprojette pas, donc cette distinction y est invisible. C'est pour cela que je l'ai calculee.
 
-Pourquoi la pose fraiche ne corrige rien : en soumettant la pose fraiche (0,0), je dis au compositeur que l'image a ete vue d'ou la tete est maintenant. Sa correction vaut reel - soumis = 0,0 - 0,0 = 0 : il ne fait rien, et l'erreur reste rendu - soumis = -6,0 degres, exactement ce qu'on aurait sans reprojection. Sur fraiche.png, prise a la meme image 30, les deux poteaux sont decales d'environ 30 pixels vers la droite par rapport a rendu.png. La pose fraiche est plus vraie, et elle est fausse ici, parce que la question n'est pas "ou est la tete", c'est "d'ou l'image a ete vue". A un degre et demi par trame, a soixante-douze trames par seconde, rien ne plante et personne ne tient dix minutes.
+Pourquoi la pose fraiche ne corrige rien : parce qu'elle annule la correction du compositeur.
+En soumettant la pose fraiche (0,0), je dis que l'image a ete vue d'ou la tete est maintenant.
+Sa correction vaut alors reel - soumis = 0,0 - 0,0 = 0 : il ne fait rien.
+L'erreur reste rendu - soumis = -6,0 degres, comme s'il n'y avait aucune reprojection.
+Sur fraiche.png, prise a la meme image 30, les deux poteaux sont decales d'environ 30 pixels vers la droite par rapport a rendu.png.
+La pose fraiche est plus vraie, et pourtant elle est fausse ici.
+La question n'est pas "ou est la tete", c'est "d'ou l'image a ete vue".
+Sur un vrai casque, l'ecart serait plus petit, car la tete va 5 a 10 fois moins vite que dans mon banc.
+Mais il serait present a chaque trame, sans aucun message d'erreur.
