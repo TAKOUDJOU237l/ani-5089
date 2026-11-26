@@ -1,0 +1,10 @@
+trame : 1, instant : 16666, image : 0, x : -31, y : 1700
+trame : 2, instant : 33333, image : 1, x : -26, y : 1700
+trame : 3, instant : 50000, image : 2, x : -21, y : 1700
+trame : 4, instant : 66666, image : 0, x : -16, y : 1700
+trame : 5, instant : 83333, image : 1, x : -11, y : 1700
+trame : 6, instant : 100000, image : 2, x : -6, y : 1700
+trame : 7, instant : 116666, image : 0, x : -1, y : 1700
+trame : 8, instant : 133333, image : 1, x : 4, y : 1700
+trame : 9, instant : 150000, image : 2, x : 9, y : 1700
+trame : 10, instant : 166666, image : 0, x : 14, y : 1700

@@ -1,0 +1,11 @@
+Fichier lu : include/NKRHI/Core/NkContextDesc.h (438 lignes, kit R3D)
+
+Ma question : quel champ decide du backend qui sera cree, et ou le choix d'une carte graphique imposee par un casque s'insere-t-il ?
+Le chemin que j'ai suivi :
+1. Ligne 345, dans NkContextDesc : le champ api, de type NkGraphicsApi, vaut NK_GFX_API_NONE par defaut. C'est lui qui nomme le backend. Aucun autre champ du fichier ne choisit l'API.
+2. Lignes 384 a 435 : chacune des sept fabriques statiques (MakeOpenGL, MakeVulkan, MakeSoftware...) ne fait qu'ecrire ce champ api, puis regler un ou deux champs du sous-descripteur correspondant. Le backend est une donnee, posee une fois, a la construction.
+3. Lignes 362 a 382 : la seule condition du fichier qui lit une API, IsComputeEnabledForApi. C'est un switch sur api, mais il ne cree rien : il repond a la question "le calcul est-il actif sur ce backend ?". Il n'y a aucun test du backend ailleurs dans le fichier.
+4. Le fichier ne cree donc rien. J'ai suivi la piste dans NkDeviceFactory.h : CreateAutoDetect (lignes 39 a 41 du commentaire) prend un descripteur d'initialisation, teste les API dans l'ordre de la plateforme, et "modifie init.api avec l'API choisie pour que l'appelant sache ce qui a ete selectionne". Le champ de donnees est donc lu a la fabrique, et reecrit par elle.
+5. Pour la carte imposee par un casque, lignes 83 a 91, dans NkVulkanDesc : le crochet pickPhysicalDevice est appele apres la creation de l'instance Vulkan, avant la selection de la carte. S'il rend un handle non nul, la selection est restreinte a ce GPU. Les verifications de queues et d'extensions s'appliquent toujours.
+Ce que je conclus : le choix du backend tient en un champ de donnees lu a un seul endroit, la fabrique. Le choix de la carte, lui, n'est pas un champ : c'est un crochet qu'une session XR peut remplir. Cela correspond a la regle du chapitre : session d'abord, device ensuite, parce que le runtime dicte la carte.
+Limite : le code de la fabrique n'est pas dans le kit, seulement son en-tete. Je n'ai donc pas verifie par la lecture que le crochet est bien appele a cet endroit. Je rapporte ce que le commentaire annonce.

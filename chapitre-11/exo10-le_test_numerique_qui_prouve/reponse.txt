@@ -1,0 +1,26 @@
+Les deux configurations comparees : deux executions separees du meme test sans fenetre, avec une seule valeur de reglage qui change.
+Configuration A : une session sans fenetre, avec une chaine de 3 images. Elle ecrit valeurs-sim.txt.
+Configuration B : la meme session, avec une chaine de 2 images. Elle ecrit valeurs-autre.txt.
+Ce n'est pas un autre backend : je n'en ai pas, et le kit n'a pas de module XR. Ce n'est pas non plus le rendu logiciel du moteur.
+La session est une simulation que j'ai ecrite : elle suit le protocole du chapitre, une fin de trame a chaque trame.
+Les deux releves viennent de deux lancements du programme, pas d'une seule execution copiee deux fois.
+Le test pose une pose de tete scriptee, qui avance de 5 mm par trame, et il avance de dix trames.
+A chaque trame, il releve l'instant predit, l'index d'image, et x et y de l'oeil gauche en millimetres.
+comparaison.txt est calculee par le programme, en relisant les deux fichiers.
+
+Ce que ce test prouve : que l'instant predit et la pose de l'oeil ne dependent pas de la configuration.
+Dans comparaison.txt, ecart instant, ecart x et ecart y valent 0 aux dix trames.
+Ce sont les valeurs que je peux exiger identiques sur deux backends. Ce sont les seules du releve.
+Il prouve aussi qu'une valeur peut dependre du reglage sans que le test soit faux.
+L'index d'image diverge a six trames sur dix : ecarts de 2, 1, 1, 1, 2 et 1 aux trames 3, 4, 5, 6, 9 et 10.
+Ce n'est pas une erreur. Avec 3 images la suite est 0, 1, 2, 0, 1, 2. Avec 2 images elle est 0, 1, 0, 1.
+L'index depend de la taille de la chaine. Il ne doit donc pas entrer dans le test de preuve.
+C'est la meme lecon que la largeur, 640 contre 2080 : une valeur qui depend du materiel n'est pas un critere.
+
+Ce qu'il ne prouve pas : que mon application tourne sur un vrai casque.
+Les deux configurations sont des simulations ecrites par moi, avec la meme logique. Elles sont d'accord parce qu'elles partagent le meme code de pose et d'horloge.
+Un accord entre deux simulations qui partagent le meme code ne prouve pas l'accord avec un vrai runtime.
+Il ne prouve rien sur la duree reelle d'une trame, ni sur la prediction d'un compositeur.
+Il ne prouve rien sur la pose reelle d'un casque, qui bouge et que le runtime ne scripte pas.
+Il ne prouve pas non plus que l'image soit correcte : je n'ai releve que des entiers.
+Pour que le test prouve davantage, il faudrait le lancer sur un autre backend reel, avec la meme pose scriptee.

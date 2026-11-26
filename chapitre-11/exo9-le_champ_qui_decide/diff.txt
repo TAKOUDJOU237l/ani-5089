@@ -1,0 +1,5 @@
+--- fabrique.cpp
++++ fabrique_casque.cpp
+@@ -255 +255 @@
+-	desc.backend = Backend::SIMULATEUR;
++	desc.backend = Backend::CASQUE;

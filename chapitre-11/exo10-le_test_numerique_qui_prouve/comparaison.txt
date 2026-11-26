@@ -1,0 +1,10 @@
+trame : 1, ecart instant : 0, ecart image : 0, ecart x : 0, ecart y : 0
+trame : 2, ecart instant : 0, ecart image : 0, ecart x : 0, ecart y : 0
+trame : 3, ecart instant : 0, ecart image : 2, ecart x : 0, ecart y : 0
+trame : 4, ecart instant : 0, ecart image : 1, ecart x : 0, ecart y : 0
+trame : 5, ecart instant : 0, ecart image : 1, ecart x : 0, ecart y : 0
+trame : 6, ecart instant : 0, ecart image : 1, ecart x : 0, ecart y : 0
+trame : 7, ecart instant : 0, ecart image : 0, ecart x : 0, ecart y : 0
+trame : 8, ecart instant : 0, ecart image : 0, ecart x : 0, ecart y : 0
+trame : 9, ecart instant : 0, ecart image : 2, ecart x : 0, ecart y : 0
+trame : 10, ecart instant : 0, ecart image : 1, ecart x : 0, ecart y : 0

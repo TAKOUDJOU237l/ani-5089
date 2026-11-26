@@ -1,0 +1,10 @@
+Fichier lu : include/NKRHI/Core/NkContextDesc.h (438 lignes, kit R3D)
+
+Ce que ce fichier expose : un descripteur par API, puis un descripteur global qui les regroupe. Je liste la frontiere, pas l'implementation.
+Les enumerations : NkGpuPreference (defaut, basse consommation, haute performance), NkSwapchainFormat (six formats, dont deux HDR reserves au GPU), NkGpuVendor (huit valeurs), NkGLProfile, NkGLContextFlags, NkGLSwapInterval, et, sous Windows seulement, NkPFDFlags et NkPFDPixelType.
+Les structures de reglages par API : NkGpuSelectionDesc (choix de la carte), NkVulkanDesc, NkDirectX11Desc, NkDirectX12Desc, NkMetalDesc, NkSoftwareDesc, NkComputeActivationDesc, et pour OpenGL : NkOpenGLRuntimeOptions, NkGLXHints, NkEGLHints, NkWGLFallbackPixelFormat, NkOpenGLDesc.
+Trois fabriques de preselection pour OpenGL : NkOpenGLDesc::Desktop46, Desktop33 et ES32.
+Le point d'entree, la structure NkContextDesc : un champ api qui nomme le backend, un sous-descripteur par API, le champ swapchainFormat, la methode IsComputeEnabledForApi, et sept fabriques statiques : MakeOpenGL, MakeOpenGLES, MakeVulkan, MakeDirectX11, MakeDirectX12, MakeMetal, MakeSoftware.
+Une fonction libre en ligne : NkSwapchainFormatIsSrgb. Et deux operateurs | avec la fonction HasFlag, pour les drapeaux.
+Ce que le fichier n'expose pas : aucune fonction qui cree un device. Il n'y a ni creation, ni chargement, ni test de disponibilite. La creation est declaree dans un autre fichier, NkDeviceFactory.h (57 lignes), que j'ai ouvert pour confirmer : Create, CreateForApi, CreateWithFallback, CreateAutoDetect, IsApiSupported, Destroy.
+Un point de frontiere a noter : le crochet XR de NkVulkanDesc, pickPhysicalDevice, est un pointeur de fonction avec un pointeur utilisateur. C'est la seule fenetre ouverte vers l'exterieur, ici vers un runtime de casque.

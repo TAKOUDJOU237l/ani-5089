@@ -1,0 +1,7 @@
+Fichier lu : include/NKRHI/Core/NkContextDesc.h (438 lignes, kit R3D)
+
+Ce que l'en-tete annonce : une seule ligne, "NkContextDesc.h - Descripteur unifie de creation/configuration de device RHI". Le fichier se presente donc comme un descripteur de donnees : une structure qu'on remplit avant de creer un peripherique graphique, et rien d'autre. Il n'annonce aucun comportement.
+L'en-tete ne dit pas ce que le fichier ne fait pas. C'est la difference avec l'en-tete honnete du chapitre. Les limites existent, mais elles sont rangees dans des commentaires a l'interieur du fichier, pas en tete.
+Premiere limite, aux lignes 27 a 29 : seuls BGRA8_UNORM et BGRA8_SRGB sont pleinement cables. Les autres formats du swapchain (RGB10A2, RGBA16F) tombent en repli sur BGRA8_UNORM. Le fichier dit donc ce qu'il ne fait pas encore, et ce qu'il fait a la place.
+Deuxieme limite, aux lignes 113 a 116 : l'allocateur de descripteurs DX12 ne libere pas ses emplacements, d'ou un tas tres grand, et la note "a terme : free-list".
+Ce que je retiens apres la premiere passe : ce fichier ne contient presque aucune logique. Je m'attends a des champs, des valeurs par defaut et quelques fonctions d'aide. Je n'ai pas lu le code qui consomme ce descripteur : il n'est pas dans le kit, qui ne contient que des en-tetes.

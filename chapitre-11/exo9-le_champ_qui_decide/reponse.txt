@@ -1,0 +1,27 @@
+Ce qui a change : une seule ligne, celle du champ du descripteur de session.
+Dans fabrique.cpp : desc.backend = Backend::SIMULATEUR;
+Dans fabrique_casque.cpp (une copie locale, que je ne depose pas) : desc.backend = Backend::CASQUE;
+diff.txt le montre : une ligne retiree, une ligne ajoutee, et rien d'autre.
+Un seul endroit du programme lit ce champ : la fonction CreerSession, dans la zone FABRIQUE.
+Elle rend des donnees : le backend demande, le backend obtenu, le nom du fichier de capture, un drapeau de repli.
+Un repli a eu lieu. Je n'ai pas de casque, et le kit n'a pas de module XR.
+Le backend CASQUE a donc demande un casque et obtenu le simulateur.
+La console l'affiche : "backend demande : CASQUE, backend obtenu : SIMULATEUR, repli : OUI".
+casque.png n'est donc pas une image de casque : c'est ce que le repli produit.
+Ce repli est un resultat valable, et je ne le cache pas. C'est le comportement voulu du chapitre : on ne s'arrete jamais.
+
+Ce qui n'a pas change : tout le code metier.
+La boucle, la scene, la camera et la pose de tete scriptee sont identiques dans les deux fichiers.
+La boucle ne teste jamais le backend. Elle lit seulement la session que la fabrique lui a rendue.
+La scene est la meme salle, avec deux poteaux, un rouge et un bleu.
+Les deux captures sont prises a la meme image, la 30, avec la meme pose.
+Elles montrent la meme scene. C'est normal ici, puisque les deux executions ont fini sur le simulateur.
+Je ne peux pas dire que le meme rendu serait obtenu sur un vrai casque : je ne l'ai pas observe.
+
+Ou je testerais si j'avais un casque : sur les valeurs numeriques, pas sur l'image.
+Je poserais une pose scriptee, j'avancerais de dix trames, et je releverais des entiers : l'instant predit, la pose de l'oeil en millimetres.
+Je comparerais ces valeurs sur le simulateur et sur le casque, avec une tolerance de zero sur la pose.
+Je ne comparerais pas la resolution : elle depend du materiel, 640 sur 720 pour le simulateur, 2080 sur 2096 pour un Quest 2.
+Je ne comparerais pas l'index d'image non plus, parce qu'il depend de la taille de la chaine d'images.
+Je regarderais aussi le journal : le chemin retenu (variable, loader, decouverte directe) et les extensions offertes.
+Enfin je verifierais que la fabrique est le seul fichier a changer, avec le meme diff que celui-ci.
