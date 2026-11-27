@@ -4,12 +4,19 @@
 //
 //  Un test SANS TETE : il cree une session sans fenetre (aucun NkWindow, aucun
 //  peripherique graphique), pose une pose de tete scriptee, avance de dix
-//  trames, et releve quatre entiers a chaque trame :
-//      instant predit (en microsecondes), index d'image, x et y de l'oeil gauche
-//      (en millimetres).
+//  trames, et releve cinq entiers a chaque trame : le numero de trame, l'instant
+//  predit (microsecondes), l'index d'image, x et y de l'oeil gauche (millimetres).
+//
 //  Il n'y a pas de casque et pas de module XR dans le kit : la session est une
-//  simulation ecrite ici, qui suit le protocole du chapitre 10 (attente, debut,
-//  fin de chaque trame).
+//  SIMULATION ecrite ici. Elle n'est pas une coquille : elle possede
+//    - une horloge, qui predit l'instant d'affichage de chaque trame (72 Hz,
+//      comme l'exemple de l'enonce : trame 3 -> 41666 us) ;
+//    - une chaine d'images, ou l'on emprunte puis rend chaque image ;
+//    - le protocole du chapitre 10 : attente, debut, fin, et elle REFUSE un
+//      appel hors de l'ordre ;
+//    - un fournisseur de pose, echantillonne a l'instant PREDIT, jamais a
+//      partir du numero de trame.
+//  Ce qu'elle ne fait pas : aucun rendu, aucune vraie prediction de runtime.
 //
 //  Trois modes, trois executions distinctes :
 //      test sim    valeurs-sim.txt      configuration A : chaine de 3 images
@@ -20,66 +27,120 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <string>
 #include <vector>
 
 namespace {
 
-const int kTrames = 10;                  // le test avance de dix trames
-const long long kHertz = 60;             // la cadence est la meme sur les deux configurations
+const int kTrames = 10;                        // le test avance de dix trames
+const long long kHertz = 72;                   // cadence de l'exemple : 41666 us a la trame 3
 const long long kMicrosParSeconde = 1000000;
-const int kDemiEcartYeuxMm = 31;         // 62 mm entre les yeux : l'oeil gauche est a -31
+const int kDemiEcartYeuxMm = 31;               // 62 mm entre les yeux : l'oeil gauche est a -31
 const int kHauteurYeuxMm = 1700;
-const int kPasMarcheMm = 5;              // la tete avance de 5 mm par trame
+const long long kVitesseTeteMmParSeconde = 200;   // la tete avance de 20 cm par seconde
 
 // Une configuration : ce que l'on fait varier entre les deux executions.
 struct Configuration {
     const char *nom;
-    int imagesChaine;                    // taille de la chaine d'images
+    int imagesChaine;                          // taille de la chaine d'images
 };
 
 const Configuration kConfigA = {"A : session sans fenetre, chaine de 3 images", 3};
 const Configuration kConfigB = {"B : session sans fenetre, chaine de 2 images", 2};
 
-// Une session sans fenetre : elle compte les trames, comme le simulateur du chapitre.
+// Le fournisseur de pose : une pose SCRIPTEE, fonction du TEMPS et non de la trame.
+// Il rend la position de l'oeil gauche, en millimetres, a un instant en microsecondes.
+void PoseScriptee(long long instantMicros, long long &xMm, long long &yMm) {
+    const long long teteX = instantMicros * kVitesseTeteMmParSeconde / kMicrosParSeconde;
+    xMm = teteX - kDemiEcartYeuxMm;
+    yMm = kHauteurYeuxMm;
+}
+
+// Ce que l'attente de trame rend : la trame et l'instant predit.
+struct EtatTrame {
+    int trame = 0;
+    long long instantPredit = 0;
+};
+
+// Une session sans fenetre.
 class SessionSansFenetre {
 public:
-    explicit SessionSansFenetre(const Configuration &c) : config_(c) {}
+    explicit SessionSansFenetre(const Configuration &c)
+        : config_(c), imageEmpruntee_(c.imagesChaine, false) {}
 
-    // La pose de tete scriptee : une fonction de la trame, jamais de l'horloge.
-    void PoseDeLOeilGauche(int trame, int &xMm, int &yMm) const {
-        const int teteX = kPasMarcheMm * (trame - 1);
-        xMm = teteX - kDemiEcartYeuxMm;
-        yMm = kHauteurYeuxMm;
+    // Attente : refusee si une trame est restee ouverte.
+    bool Attendre(EtatTrame &etat) {
+        if (ouverte_) {
+            ++fautes_;
+            return false;
+        }
+        ++trame_;
+        etat.trame = trame_;
+        // L'instant d'affichage predit : la fin de la trame courante.
+        etat.instantPredit = (long long)trame_ * kMicrosParSeconde / kHertz;
+        return true;
     }
 
-    // L'instant d'affichage predit pour cette trame : une periode par trame.
-    long long InstantPredit(int trame) const {
-        return (long long)trame * kMicrosParSeconde / kHertz;
-    }
-
-    // Toutes les trames sont dessinees, donc l'index avance a chaque trame.
-    int IndexDImage(int trame) const {
-        return (trame - 1) % config_.imagesChaine;
-    }
-
-    // Un tour : attente, debut, fin. Une trame commencee est toujours terminee.
-    void Avancer() {
-        ++trames_;
+    bool Commencer() {
+        if (ouverte_) {
+            ++fautes_;
+            return false;
+        }
         ouverte_ = true;
-        ouverte_ = false;
+        return true;
     }
 
-    int Trames() const { return trames_; }
-    const Configuration &Config() const { return config_; }
+    // La pose de l'oeil gauche, echantillonnee a l'instant predit.
+    bool LocaliserOeil(long long instantPredit, long long &xMm, long long &yMm) {
+        if (!ouverte_) {
+            ++fautes_;
+            return false;
+        }
+        PoseScriptee(instantPredit, xMm, yMm);
+        return true;
+    }
+
+    // On emprunte la prochaine image de la chaine : refuse si elle est deja empruntee.
+    bool EmprunterImage(int &index) {
+        if (!ouverte_ || imageEmpruntee_[prochaine_]) {
+            ++fautes_;
+            return false;
+        }
+        index = prochaine_;
+        imageEmpruntee_[prochaine_] = true;
+        prochaine_ = (prochaine_ + 1) % config_.imagesChaine;   // n'avance que sur une trame rendue
+        return true;
+    }
+
+    bool RendreImage(int index) {
+        if (!imageEmpruntee_[index]) {
+            ++fautes_;
+            return false;
+        }
+        imageEmpruntee_[index] = false;
+        return true;
+    }
+
+    bool Finir() {
+        if (!ouverte_) {
+            ++fautes_;
+            return false;
+        }
+        ouverte_ = false;
+        return true;
+    }
+
+    int Fautes() const { return fautes_; }
 
 private:
     Configuration config_;
-    int trames_ = 0;
+    std::vector<bool> imageEmpruntee_;
+    int prochaine_ = 0;
+    int trame_ = 0;
     bool ouverte_ = false;
+    int fautes_ = 0;
 };
 
-// Execute le test et ecrit dix lignes dans le fichier donne (et a l'ecran).
+// Execute le test : dix trames, chacune par le protocole complet.
 int Releve(const Configuration &config, const char *fichier) {
     std::FILE *sortie = std::fopen(fichier, "w");
     if (sortie == nullptr) {
@@ -88,21 +149,27 @@ int Releve(const Configuration &config, const char *fichier) {
     }
     SessionSansFenetre session(config);
     for (int i = 0; i < kTrames; ++i) {
-        session.Avancer();
-        const int trame = session.Trames();
-        int x = 0;
-        int y = 0;
-        session.PoseDeLOeilGauche(trame, x, y);
-        const long long instant = session.InstantPredit(trame);
-        const int image = session.IndexDImage(trame);
-        std::fprintf(sortie, "trame : %d, instant : %lld, image : %d, x : %d, y : %d\n",
-                     trame, instant, image, x, y);
-        std::printf("trame : %d, instant : %lld, image : %d, x : %d, y : %d\n",
-                    trame, instant, image, x, y);
+        EtatTrame etat;
+        long long x = 0;
+        long long y = 0;
+        int image = -1;
+        const bool ok = session.Attendre(etat) && session.Commencer()
+                        && session.LocaliserOeil(etat.instantPredit, x, y)
+                        && session.EmprunterImage(image)
+                        && session.RendreImage(image) && session.Finir();
+        if (!ok) {
+            std::fprintf(stderr, "la session a refuse un appel a la trame %d\n", i + 1);
+            std::fclose(sortie);
+            return 1;
+        }
+        std::fprintf(sortie, "trame : %d, instant : %lld, image : %d, x : %lld, y : %lld\n",
+                     etat.trame, etat.instantPredit, image, x, y);
+        std::printf("trame : %d, instant : %lld, image : %d, x : %lld, y : %lld\n",
+                    etat.trame, etat.instantPredit, image, x, y);
     }
     std::fclose(sortie);
-    std::printf("configuration %s -> %s\n", config.nom, fichier);
-    return 0;
+    std::printf("configuration %s : %d fautes de protocole -> %s\n", config.nom, session.Fautes(), fichier);
+    return session.Fautes() == 0 ? 0 : 1;
 }
 
 struct Ligne {

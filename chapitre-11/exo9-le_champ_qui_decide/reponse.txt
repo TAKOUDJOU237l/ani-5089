@@ -2,6 +2,11 @@ Ce qui a change : une seule ligne, celle du champ du descripteur de session.
 Dans fabrique.cpp : desc.backend = Backend::SIMULATEUR;
 Dans fabrique_casque.cpp (une copie locale, que je ne depose pas) : desc.backend = Backend::CASQUE;
 diff.txt le montre : une ligne retiree, une ligne ajoutee, et rien d'autre.
+Pour rejouer ce diff : fabrique_casque.cpp n'est pas depose, c'est une copie de fabrique.cpp faite par une commande.
+La commande remplace sur une seule ligne desc.backend = Backend::SIMULATEUR; par desc.backend = Backend::CASQUE;
+En Python : python -c "import pathlib; p = pathlib.Path('fabrique.cpp'); pathlib.Path('fabrique_casque.cpp').write_bytes(p.read_bytes().replace(b'desc.backend = Backend::SIMULATEUR;', b'desc.backend = Backend::CASQUE;'))"
+On peut aussi copier le fichier et changer cette ligne a la main.
+Puis : git diff --no-index --unified=0 fabrique.cpp fabrique_casque.cpp. On retrouve les memes deux lignes que dans diff.txt.
 Un seul endroit du programme lit ce champ : la fonction CreerSession, dans la zone FABRIQUE.
 Elle rend des donnees : le backend demande, le backend obtenu, le nom du fichier de capture, un drapeau de repli.
 Un repli a eu lieu. Je n'ai pas de casque, et le kit n'a pas de module XR.

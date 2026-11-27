@@ -8,12 +8,13 @@
 //  dans la console et dit dans reponse.txt.
 //
 //  Le choix du backend tient en UN champ du descripteur de session :
-//      desc.backend = Backend::SIMULATEUR;     (dans nkmain, une seule ligne)
+//      la ligne desc.backend = ... ;           (dans nkmain, une seule ligne)
 //  et UN seul test le lit : CreerSession, dans la zone FABRIQUE ci-dessous.
 //  La boucle et la scene (le code metier) ne savent pas quel backend tourne.
 //
-//  Pour la version casque : fabrique_casque.cpp est ce fichier, avec la seule
-//  ligne du champ changee (Backend::CASQUE). diff.txt en est la preuve.
+//  Pour la version casque : fabrique_casque.cpp est une copie de ce fichier, avec la
+//  seule ligne du champ changee (SIMULATEUR devient CASQUE). Elle n'est pas deposee ;
+//  reponse.txt dit comment la refaire, et diff.txt en est la preuve.
 //  Capture a l'image 30 : simulateur.png ou casque.png, selon la session.
 // =============================================================================
 #include "NKWindow/NKMain.h"
